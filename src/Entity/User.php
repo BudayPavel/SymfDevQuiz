@@ -5,117 +5,108 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Entity
+ * @UniqueEntity(fields="email", message="Email already taken")
+ * @UniqueEntity(fields="username", message="Username already taken")
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
-
-    private $login;
+    private $email;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank()
      */
-    private $firstname;
+    private $username;
 
     /**
-     * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(max=4096)
      */
-    private $lastname;
+    private $plainPassword;
 
     /**
-     * @ORM\Column(type="string")
+     * The below length depends on the "algorithm" you use for encoding
+     * the password, but this works well with bcrypt.
+     *
+     * @ORM\Column(type="string", length=64)
      */
     private $password;
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $role;
+    // other properties and methods
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $active;
-
-    /**
-     * One Product has Many Features.
-     * @ORM\OneToMany(targetEntity="Result", mappedBy="user")
-     */
-    private $results;
-
-    public function getId()
+    public function getEmail()
     {
-        return $this->id;
+        return $this->email;
     }
 
-    public function setlogin(string $login)
+    public function setEmail($email)
     {
-        $this->login = $login;
+        $this->email = $email;
     }
 
-    public function getlogin()
+    public function getUsername()
     {
-        return $this->login;
+        return $this->username;
     }
 
-    public function setfname(string $firstname)
+    public function setUsername($username)
     {
-        $this->firstname = $firstname;
-    }
-    public function getfname()
-    {
-        return $this->firstname;
+        $this->username = $username;
     }
 
-    public function setlname(string $lastname)
+    public function getPlainPassword()
     {
-        $this->lastname = $lastname;
+        return $this->plainPassword;
     }
 
-    public function getlname()
+    public function setPlainPassword($password)
     {
-        return $this->lastname;
+        $this->plainPassword = $password;
     }
 
-    public function setpass(string $pass)
-    {
-        $this->password = $pass;
-    }
-
-    public function getpass()
+    public function getPassword()
     {
         return $this->password;
     }
 
-    public function setrole(string $role)
+    public function setPassword($password)
     {
-        $this->role = $role;
+        $this->password = $password;
     }
 
-    public function getrole()
+    public function getSalt()
     {
-        return $this->role;
+        // The bcrypt and argon2i algorithms don't require a separate salt.
+        // You *may* need a real salt if you choose a different encoder.
+        return null;
     }
 
-    public function setactive(boolean $active)
+    // other methods, including security methods like getRoles()
+    public function getRoles()
     {
-        $this->active = $active;
+        // TODO: Implement getRoles() method.
     }
 
-    public function getactive()
+    public function eraseCredentials()
     {
-        return $this->active;
+        // TODO: Implement eraseCredentials() method.
     }
 }
