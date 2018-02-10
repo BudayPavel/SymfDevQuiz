@@ -54,6 +54,15 @@ class User implements UserInterface
      */
     private $lastName;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $role = "ROLE_USER";
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $active = true;
     // other properties and methods
 
     public function getEmail()
@@ -121,7 +130,22 @@ class User implements UserInterface
     // other methods, including security methods like getRoles()
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        return $this->role;
+    }
+
+    public function setRoles($role)
+    {
+        $this->role = $role;
+    }
+
+    public function setActive($active)
+    {
+        $this->active = $active;
+    }
+
+    public function isActive()
+    {
+        return $this->active;
     }
 
     public function eraseCredentials()
