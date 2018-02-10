@@ -49,6 +49,11 @@ class User implements UserInterface
      */
     private $firstName;
 
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $lastName;
+
     // other properties and methods
 
     public function getEmail()
@@ -94,6 +99,16 @@ class User implements UserInterface
     public function setFirstName(string $firstName)
     {
         $this->firstName=$firstName;
+    }
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName)
+    {
+        $this->lastName=$lastName;
     }
 
     public function getSalt()
