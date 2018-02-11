@@ -1,11 +1,12 @@
 <?php
-declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: vlad
- * Date: 10.2.18
- * Time: 14.21
+ * Date: 11.2.18
+ * Time: 16.39
  */
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -18,24 +19,44 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class LoginController extends Controller
+class UserController extends Controller
 {
     /**
-     * @Route("/authorize", name="signup_user")
+     * @Route("/authorize", name="authorize")
+     */
+    public function show(
+        Request $request,
+        AuthenticationUtils $authUtils
+
+    ) {
+        $rform = $this->createForm(UserType::class);
+        $lform = $this->createForm(UserLogin::class);
+
+        $error = $authUtils->getLastAuthenticationError();
+
+        return $this->render(
+            'registration/authorize.html.twig',
+            array(
+                'rform' => $rform->createView(),
+                'lform' => $lform->createView(),
+                'error' => $error,
+            )
+        );
+    }
+
+    /**
+     * @Route("/authorize/signup", name="signup_user")
      */
     public function signUp(
         Request $request,
         UserPasswordEncoderInterface $passwordEncoder
     ) {
-        // 1) build the form
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
-        // 2) handle the submit (will only happen on POST)
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // 3) Encode the password (you could also do this via Doctrine listener)
             $password = $passwordEncoder->encodePassword(
                 $user,
                 $user->getPlainPassword()
@@ -50,13 +71,24 @@ class LoginController extends Controller
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user
 
-            // change this shit (route)
-            return $this->redirectToRoute('authorize/signin');
+            return $this->redirectToRoute('useradded');
         }
 
-        return $this->render(
-            'registration/register.html.twig',
-            array('form' => $form->createView())
-        );
+    }
+
+    /**
+     * @Route("/authorize/signin", name = "signin_user")
+     */
+    public function signIn()
+    {
+
+    }
+
+    /**
+     * @Route("/admin")
+     */
+    public function admin()
+    {
+        return new Response('<html><body>Admin page!</body></html>');
     }
 }

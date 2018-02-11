@@ -22,8 +22,8 @@ security:
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
 
             form_login:
-                login_path: signin
-                check_path: signin
+                login_path: authorize
+                check_path: signin_user
                 provider: user_provider
                 username_parameter: user_login[email]
                 password_parameter: user_login[password]

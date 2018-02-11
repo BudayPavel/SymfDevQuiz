@@ -2,13 +2,11 @@
     <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 {% endif %}
 
-{% if lastUsername %}
-    <div> {{ lastUsername }} </div>
-{% endif %}
+<br><br>
 
-<form action="/signin" method="post">
-    {{ form_row(form.email) }}
-    {{ form_row(form.password) }}
+<form action="/authorize/signin" method="post">
+    {{ form_row(lform.email) }}
+    {{ form_row(lform.password) }}
     {#
         If you want to control the URL the user
         is redirected to on success (more details below)
@@ -16,5 +14,12 @@
     <input type="hidden" name="_target_path" value="/admin" />
 
 
-    {{ form_row(form.submit) }}
+    {{ form_row(lform.submit) }}
 </form>
+
+<br><br>
+
+<form action="/authorize/signup" method="post">
+    {{ form_widget(rform) }}
+</form>
+
