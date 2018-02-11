@@ -19,6 +19,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+use Symfony\Component\HttpFoundation\Response;
+
 class UserController extends Controller
 {
     /**
@@ -35,7 +37,7 @@ class UserController extends Controller
         $error = $authUtils->getLastAuthenticationError();
 
         return $this->render(
-            'registration/authorize.html.twig',
+            'registration/auth.html.twig',
             array(
                 'rform' => $rform->createView(),
                 'lform' => $lform->createView(),
@@ -73,7 +75,7 @@ class UserController extends Controller
 
             return $this->redirectToRoute('useradded');
         }
-
+        return $this->redirectToRoute('fail');
     }
 
     /**

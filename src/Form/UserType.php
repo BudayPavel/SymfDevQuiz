@@ -29,11 +29,11 @@ class UserType extends AbstractType
                 @TP\RepeatedType::class,
                 array(
                 'type' => @TP\PasswordType::class,
-                'first_options'  => array('label' => 'Password'),
-                'second_options' => array('label' => 'Repeat Password'),
+                'first_options'  => array('label' => ' '),
+                'second_options' => array('label' => ' '),
                 )
             )
-            ->add('submit', @TP\SubmitType::class)
+            ->add('submit', @TP\SubmitType::class, array('label' => 'Sign Up'))
         ;
     }
 
