@@ -130,7 +130,7 @@ class User implements UserInterface
     // other methods, including security methods like getRoles()
     public function getRoles()
     {
-        return $this->role;
+        return array($this->role);
     }
 
     public function setRoles($role)

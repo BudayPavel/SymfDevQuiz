@@ -9,20 +9,24 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\UserLogin;
 use App\Form\UserType;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginController extends Controller
 {
     /**
-     * @Route("/authorize", name="user_registration")
+     * @Route("/authorize", name="signup_user")
      */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function signUp(
+        Request $request,
+        UserPasswordEncoderInterface $passwordEncoder
+    ) {
         // 1) build the form
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -32,7 +36,10 @@ class LoginController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             // 3) Encode the password (you could also do this via Doctrine listener)
-            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $password = $passwordEncoder->encodePassword(
+                $user,
+                $user->getPlainPassword()
+            );
             $user->setPassword($password);
 
             // 4) save the User!
@@ -43,7 +50,8 @@ class LoginController extends Controller
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user
 
-            return $this->redirectToRoute('/');
+            // change this shit (route)
+            return $this->redirectToRoute('authorize/signin');
         }
 
         return $this->render(
