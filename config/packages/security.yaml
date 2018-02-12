@@ -14,8 +14,11 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            provider: user_provider
             anonymous: ~
-
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
             # activate different ways to authenticate
 
 #            http_basic: ~
@@ -24,12 +27,14 @@ security:
             form_login:
                 login_path: authorize
                 check_path: signin_user
-                provider: user_provider
                 username_parameter: user_login[email]
                 password_parameter: user_login[password]
+                success_handler: acme.security.authentication_handler
+                failure_handler: acme.security.authentication_handler
+
             logout:
                 path:   /logout
-                target: /
+                target: /authorize
             # https://symfony.com/doc/current/security/form_login_setup.html
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

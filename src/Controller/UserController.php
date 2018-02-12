@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,22 +26,21 @@ class UserController extends Controller
     /**
      * @Route("/authorize", name="authorize")
      */
-    public function show(
-        Request $request,
-        AuthenticationUtils $authUtils
+    public function show(Request $request) {
 
-    ) {
+        if (!is_null($this->getUser()))
+        {
+            return $this->redirectToRoute('/');
+        }
+
         $rform = $this->createForm(UserType::class);
         $lform = $this->createForm(UserLogin::class);
-
-        $error = $authUtils->getLastAuthenticationError();
 
         return $this->render(
             'registration/auth.html.twig',
             array(
                 'rform' => $rform->createView(),
                 'lform' => $lform->createView(),
-                'error' => $error,
             )
         );
     }
@@ -73,21 +72,15 @@ class UserController extends Controller
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user
 
-            return $this->redirectToRoute('useradded');
+            return $this->redirectToRoute('authorize');
         }
-        return $this->redirectToRoute('fail');
-    }
 
-    /**
-     * @Route("/authorize/signin", name = "signin_user")
-     */
-    public function signIn()
-    {
-
+        return new Response('ssss');
     }
 
     /**
      * @Route("/admin")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function admin()
     {
