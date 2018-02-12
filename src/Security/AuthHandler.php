@@ -17,19 +17,17 @@ class AuthHandler implements AuthenticationSuccessHandlerInterface, Authenticati
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token) {
         if ($request->isXmlHttpRequest()) {
-            $result = array('success' => true);
-            $response = new Response(json_encode($result), 200);
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
+            return $response = new Response("", 200);
         } else {
             return new RedirectResponse('/');
         }
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception) {
-            $result = array('success' => false, 'message' => $exception->getMessage());
-            $response = new Response(json_encode($result), 403);
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
+        if ($request->isXmlHttpRequest()) {
+            return $response = new Response("", 403);
+        } else {
+            return new RedirectResponse('/authorize');
+        }
     }
 }

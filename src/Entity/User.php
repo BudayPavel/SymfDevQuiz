@@ -30,7 +30,7 @@ class User implements UserInterface
     private $email;
 
     /**
-     * @Assert\NotBlank()
+     *
      * @Assert\Length(max=4096)
      */
     private $plainPassword;
@@ -38,7 +38,7 @@ class User implements UserInterface
     /**
      * The below length depends on the "algorithm" you use for encoding
      * the password, but this works well with bcrypt.
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=64)
      */
     private $password;

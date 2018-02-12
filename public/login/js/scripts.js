@@ -13,7 +13,7 @@ $(document).ready(function () {
                 window.location.replace("/");
             },
             error: function () {
-                $('#error_text').text("No such user");
+                $('#error_signin_text').text("Password doesn't match");
             }
         });
     });
@@ -28,11 +28,11 @@ $(document).ready(function () {
             data: formData,
             dataType: "html",
             cache: false,
-            success: function(response){
-
+            success: function(){
+                $('#error_signup_text').text('Success! Check your email!!');
             },
-            error: function (response) {
-                $('#error_text').text("No such user");
+            error: function () {
+                $('#error_signup_text').text('Check entered data');
             }
         });
     });

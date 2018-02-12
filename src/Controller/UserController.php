@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -50,32 +51,29 @@ class UserController extends Controller
      */
     public function signUp(
         Request $request,
-        UserPasswordEncoderInterface $passwordEncoder
+        UserPasswordEncoderInterface $passwordEncoder,
+        ValidatorInterface $validator
     ) {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $user->setEmail($request->get('user')['email']);
+        $user->setFirstName($request->get('user')['firstName']);
+        $user->setLastName($request->get('user')['lastName']);
+        if ($request->get('user')['plainPassword']['first'] === $request->get('user')['plainPassword']['second']) {
+            $user->setPassword($passwordEncoder->encodePassword($user, $request->get('user')['plainPassword']['first']));
+        } else {
+            return new Response("Password doesn't match",400);
+        }
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        $errors = $validator->validate($user);
 
-            $password = $passwordEncoder->encodePassword(
-                $user,
-                $user->getPlainPassword()
-            );
-            $user->setPassword($password);
-
-            // 4) save the User!
+        if (!count($errors) > 0) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the user
-
             return $this->redirectToRoute('authorize');
         }
 
-        return new Response('ssss');
+        return new Response("<H1>Email already taken</H1>", 400);
     }
 
     /**
