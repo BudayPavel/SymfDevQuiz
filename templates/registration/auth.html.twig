@@ -13,15 +13,19 @@
 {% block body %}
     <div class="login-wrap">
         <div class="login-html">
-            <input id="tab-3" type="radio" name="tab" class="forget" hidden><label for="tab-3" class="tab"></label>
             <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
             <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
+            <input id="tab-3" type="radio" name="tab" class="sign-out"><label for="tab-3" class="tab">Sign Out</label>
             <div class="login-form">
-                <div class="forget-htm">
+                <div class="sign-out-htm">
                     <div class="group">
-                        <label>1111</label>
-                        <input type = 'text'>
+                        <label for="user" class="label">Username</label>
+                        <input id="user" type="text" class="input">
                     </div>
+                    <div class="group">
+                        <input type="submit" class="button" value="Sign Out">
+                    </div>
+                    <div class="hr"></div>
                 </div>
                 <div class="sign-in-htm">
                     {{ form_start(lform, {'attr':{ 'action':path('signin_user'),'id':'user_signin'}}) }}

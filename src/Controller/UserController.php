@@ -17,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -76,12 +75,5 @@ class UserController extends Controller
         return new Response("<H1>Email already taken</H1>", 400);
     }
 
-    /**
-     * @Route("/admin")
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     */
-    public function admin()
-    {
-        return new Response('<html><body>Admin page!</body></html>');
-    }
+
 }
