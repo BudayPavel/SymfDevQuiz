@@ -62,8 +62,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $active = true;
-    // other properties and methods
+    private $active = false;
 
     public function getEmail()
     {
