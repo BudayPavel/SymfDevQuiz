@@ -5,3 +5,7 @@ logout:
     path: /logout
 signin_user:
     path: /authorize/signin
+
+home:
+    path: /home
+    controller: App\HomePage\HomePage::home
