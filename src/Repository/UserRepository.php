@@ -13,16 +13,22 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    /*
-    public function findBySomething($value)
+    /**
+     * @param $filter
+     * @return User[]
+     */
+    public function findAllByPattern(array $filter, array $sort): array
     {
-        return $this->createQueryBuilder('m')
-            ->where('m.something = :value')->setParameter('value', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        // automatically knows to select Products
+        // the "p" is an alias you'll use in the rest of the query
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.'.$filter['filter']." LIKE '".$filter['pattern']."%'")
+            //->setParameter('value', $filter['pattern'])
+            ->orderBy('p.'.$sort['sort'], $sort['order'])
+            ->getQuery();
+
+        return $qb->execute();
     }
-    */
+
+
 }

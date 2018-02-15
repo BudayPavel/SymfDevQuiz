@@ -1,4 +1,4 @@
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>METRONIC</title>
     <link rel="stylesheet" type="text/css" href="/admin/css/bootstrap.css">
@@ -6,8 +6,14 @@
     <link rel="stylesheet" type="text/css" href="/admin/css/app.css">
     <link rel="stylesheet" type="text/css" href="/admin/css/core/menu/menu-types/vertical-menu.css">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/login/js/jquery.ajaxgrid.js"></script>
+
 </head>
 <body data-open="click" data-menu="vertical-menu" data-col="2-columns" class="vertical-layout vertical-menu 2-columns  fixed-navbar">
+
+<div id='entities-grid'>
+</div>
 
 <!-- navbar-fixed-top-->
 <nav class="header-navbar navbar navbar-with-menu navbar-fixed-top navbar-semi-dark navbar-shadow">
@@ -93,8 +99,8 @@
 <div class="app-content content container-fluid">
     <div class="content-wrapper">
         <div class="content-body">
-            <div class="row">
-                <h1>Hello world</h1>
+            <div class="row" id="entities-grid">
+
             </div>
         </div>
     </div>
