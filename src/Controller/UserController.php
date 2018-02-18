@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\PassRestore;
 use App\Form\UserLogin;
 use App\Form\UserType;
 use App\Entity\User;
@@ -35,12 +36,14 @@ class UserController extends Controller
 
         $rform = $this->createForm(UserType::class);
         $lform = $this->createForm(UserLogin::class);
+        $pform = $this->createForm(PassRestore::class);
 
         return $this->render(
             'registration/auth.html.twig',
             array(
                 'rform' => $rform->createView(),
                 'lform' => $lform->createView(),
+                'pform' => $pform->createView(),
             )
         );
     }
@@ -57,6 +60,9 @@ class UserController extends Controller
         $user->setEmail($request->get('user')['email']);
         $user->setFirstName($request->get('user')['firstName']);
         $user->setLastName($request->get('user')['lastName']);
+//        if ($request->get('user')['role'] != null) {
+//            $user->setRoles($request->get('user')['role']);
+//        }
         if ($request->get('user')['plainPassword']['first'] === $request->get('user')['plainPassword']['second']) {
             $user->setPassword($passwordEncoder->encodePassword($user, $request->get('user')['plainPassword']['first']));
         } else {
@@ -66,14 +72,32 @@ class UserController extends Controller
         $errors = $validator->validate($user);
 
         if (!count($errors) > 0) {
+
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
             return $this->redirectToRoute('authorize');
         }
 
-        return new Response("<H1>Email already taken</H1>", 400);
+        return new Response("", 400);
     }
 
+    /**
+     * @Route("/authorize/forget", name="forget")
+     */
+    public function restorePass(
+        Request $request
+    ) {
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $arr = $repository->findBy(['email' => $request->get('pass_restore')['email']]);
 
+        if (count($arr) == 1) {
+            //send mail
+            echo 'true';
+            return new Response("",200);
+        }
+        echo 'fllase';
+        return new Response("", 400);
+    }
 }

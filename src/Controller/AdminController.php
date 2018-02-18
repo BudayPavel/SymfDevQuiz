@@ -23,7 +23,6 @@ class AdminController extends Controller
      */
     public function admin()
     {
-        
-        return new Response($this->renderView('temp.html.twig'));
+        return new Response($this->renderView('agtemp.html.twig'));
     }
 }

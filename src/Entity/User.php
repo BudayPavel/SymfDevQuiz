@@ -65,6 +65,11 @@ class User implements UserInterface
      */
     private $active = false;
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getEmail()
     {
         return $this->email;
@@ -132,6 +137,11 @@ class User implements UserInterface
     {
         return array($this->role);
     }
+
+//    public function getRole()
+//    {
+//        return $this->role;
+//    }
 
     public function setRoles($role)
     {

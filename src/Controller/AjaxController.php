@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use function MongoDB\BSON\fromJSON;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,27 +28,41 @@ class AjaxController extends Controller
      */
     public function getJson(Request $request, $slug)
     {
-            $params = array(
-                'rowsPerPage' => $request->query->get('rowsPerPage'),
-                'sortBy' => $request->query->get('sortBy'),
-                'order' => $request->query->get('order'),
-                'filterBy' => $request->query->get('filterBy'),
-                'pattern' => $request->query->get('pattern'),
-                'page'=> $request->query->get('page')
+        $params = array(
+            'start' => 0,
+            'current_page_number' => 1,
+            'records_per_page' => 10,
+            'search' => "",
+            'searchFields' => null,
+            'order' => 'ASC',
+            'orderField' => ""
+        );
+
+        $params['current_page_number'] = $request->get('current');
+        $params['records_per_page'] = $request->get('rowCount');
+        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+        $params['search'] = $request->get('searchPhrase');
+        $params['searchFields'] = $request->get('searchableFields');
+        $params['orderField'] = $request->get('orderField');
+        $params['order'] = $request->get('order');
+
+        switch ($slug) {
+        case 'users':
+            $repository = $this->getDoctrine()->getRepository(User::class);
+            $repository->countFiltered($params);
+
+            $arr = $repository->findAllFiltered1($params);
+
+            $output = array(
+                'current' => $params['current_page_number'],
+                'rowCount' => $params['records_per_page'],
+                'total' => $repository->countFiltered($params),
+                'rows' => $arr
             );
 
-            switch ($slug) {
-            case 'users':
-                $repository = $this->getDoctrine()->getRepository(User::class);
-                $arr = $repository->findAll();
-//                ByPattern(
-//                        array('filter' =>$params['filterBy'] , 'pattern' => $params['pattern']),
-//                        array('sort' => $params['sortBy'] , 'order' => $params['order']) // not error, phpstorm can't see method
-//                    );
 
-                break;
-            }
-
-            return $this->json($arr, Response::HTTP_OK, array('Type' => 'User'));
+            break;
+        }
+            return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
     }
 }

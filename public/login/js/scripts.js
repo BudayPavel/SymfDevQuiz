@@ -36,4 +36,23 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#user_forget').submit(function(e){
+        e.preventDefault();
+
+        var formData = $(this).serialize();
+        $.ajax({
+            url: "http://quiz.dev/authorize/forget",
+            type: "POST",
+            data: formData,
+            dataType: "html",
+            cache: false,
+            success: function(){
+                $('#error_forget_text').text('Check your email!');
+            },
+            error: function () {
+                $('#error_forget_text').text('Email not found');
+            }
+        });
+    });
 });
