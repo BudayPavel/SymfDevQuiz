@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: vlad
- * Date: 11.2.18
- * Time: 16.39
- */
 
 declare(strict_types=1);
 
@@ -23,9 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
-    /**
-     * @Route("/authorize", name="authorize")
-     */
+
     public function show(Request $request) {
 
         if (!is_null($this->getUser()))
