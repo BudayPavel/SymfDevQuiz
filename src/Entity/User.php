@@ -31,12 +31,6 @@ class User implements UserInterface
     private $email;
 
     /**
-     *
-     * @Assert\Length(max=4096)
-     */
-    private $plainPassword;
-
-    /**
      * The below length depends on the "algorithm" you use for encoding
      * the password, but this works well with bcrypt.
      * @Assert\NotBlank()
@@ -65,6 +59,12 @@ class User implements UserInterface
      */
     private $active = false;
 
+    /**
+     * One Product has Many Features.
+     * @ORM\OneToMany(targetEntity="Result", mappedBy="user_id")
+     */
+    private $results;
+
     public function getId()
     {
         return $this->id;
@@ -83,16 +83,6 @@ class User implements UserInterface
     public function getUsername()
     {
         return $this->email;
-    }
-
-    public function getPlainPassword()
-    {
-        return $this->plainPassword;
-    }
-
-    public function setPlainPassword($password)
-    {
-        $this->plainPassword = $password;
     }
 
     public function getPassword()

@@ -26,13 +26,15 @@ $(document).ready(function () {
             url: "http://quiz.dev/authorize/signup",
             type: "POST",
             data: formData,
-            dataType: "html",
+            dataType: "json",
             cache: false,
-            success: function(){
-                $('#error_signup_text').text('Success! Check your email!!');
-            },
-            error: function () {
-                $('#error_signup_text').text('Check entered data');
+            success: function(response){
+                console.log(response);
+                $('#error_signup_text').text(response['success']);
+            }, // finish error check
+            error: function (response) {
+                console.log(response);
+                $('#error_signup_text').text(response.responseJSON['errorMes']);
             }
         });
     });

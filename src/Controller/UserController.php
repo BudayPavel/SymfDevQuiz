@@ -15,6 +15,7 @@ use App\Form\UserLogin;
 use App\Form\UserType;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -60,27 +61,28 @@ class UserController extends Controller
         $user->setEmail($request->get('user')['email']);
         $user->setFirstName($request->get('user')['firstName']);
         $user->setLastName($request->get('user')['lastName']);
-//        if ($request->get('user')['role'] != null) {
-//            $user->setRoles($request->get('user')['role']);
+        if (isset($request->get('user')['role'])) {
+            $user->setRoles($request->get('user')['role']);
+        }
+//        if (isset($request->get('user')['active']) && $request->get('user')['active'] === 'on') {
+//            $user->setActive(true);
 //        }
         if ($request->get('user')['plainPassword']['first'] === $request->get('user')['plainPassword']['second']) {
             $user->setPassword($passwordEncoder->encodePassword($user, $request->get('user')['plainPassword']['first']));
         } else {
-            return new Response("Password doesn't match",400);
+            return $this->json(['errorMes'=>'Passwords does not match'], 400);
         }
 
         $errors = $validator->validate($user);
 
         if (!count($errors) > 0) {
-
-
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-            return $this->redirectToRoute('authorize');
+            return new JsonResponse(['success'=>'Success! Check your email!'],200);
         }
 
-        return new Response("", 400);
+        return new JsonResponse(['errorMes' => 'Email already used'],400);
     }
 
     /**
