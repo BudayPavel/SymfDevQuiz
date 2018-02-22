@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
+        <script type="text/javascript" src="/login/js/jquery-3.3.1.min.js"></script>
+        {#<script type="text/javascript" src="/login/js/bootstrap.min.js"></script>#}
+        <script type ="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/login/js/jquery.ajaxgrid.js"></script>
+        <link rel="stylesheet" type="text/css" href="/login/css/bootstrap.min.css">
+    </head>
+    <body>
+    <button id="users">USERS</button>
+    <button id="quiz">QUIZ</button>
+    <button id="question">QUESTIONS</button>
+
+        <div id="entities-grid" class='container box'></div>
+    </body>
+</html>
+
+<script>
+
+    $('#users').click(function () {
+        $("#entities-grid").empty();
+        $("#entities-grid").ajaxgrid({
+            'url':'http://quiz.dev/ajax/users',
+            'table':'user',
+            'showFields':['id','email','firstName','lastName','roles','active'],
+            'filterableFields':['email','firstName','lastName'],
+            'sortableFields':['id','email','firstName','lastName']
+        });
+    });
+
+    $('#quiz').click(function () {
+        $("#entities-grid").empty();
+        $("#entities-grid").ajaxgrid({
+            'url':'http://quiz.dev/ajax/quiz',
+            'table':'quiz',
+            'showFields':['id','name','active','date'],
+            'filterableFields':['name','date'],
+            'sortableFields':['id','name','date']
+        });
+    });
+
+    $('#question').click(function () {
+        $("#entities-grid").empty();
+        $("#entities-grid").ajaxgrid({
+            'url':'http://quiz.dev/ajax/question',
+            'table':'question',
+            'showFields':['id','text'],
+            'filterableFields':['text'],
+            'sortableFields':['id','text']
+        });
+    });
+</script>
