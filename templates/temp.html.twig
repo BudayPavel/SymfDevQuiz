@@ -1,44 +1,48 @@
 <html>
 <head>
     <title>Admin page</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.3.1/jquery.bootgrid.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bootgrid/1.3.1/jquery.bootgrid.js"></script>
-
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/login/js/jquery.agrid.js"></script>
-
-    <style>
-        body
-        {
-            margin:0;
-            padding:0;
-            background-color:#f1f1f1;
-        }
-        .box
-        {
-            width:1270px;
-            padding:20px;
-            background-color:#fff;
-            border:1px solid #ccc;
-            border-radius:5px;
-            margin-top:25px;
-        }
-        .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
-            padding-bottom: 12px;
-        }
-        .table > thead > tr > th {
-            width: 50px;
-        }
-    </style>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/login/js/jquery.ajaxgrid.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
 </head>
 <body>
-    <div id='entities-grid'></div>
+<h1>{{ quiz.name }}</h1>
+<label id="num">1</label>)<label id="question">{{ question.text }}</label>
+<br>
+<form action="quiz.dev/{{ qid }}" id="formData">
+    <input type="text" id="quiz" value="{{ quiz.id }}" hidden/>
+    <input type="text" id="quest" value="{{ question.id }}" hidden/>
+{% for answer in question.answers %}
+    <input type="radio" id="aid" name="aid" value="{{ answer.id }}"> {{ answer.text }}<br>
+{% endfor %}
+    <label id="cur"></label> of <label>{{ question.answers.length }}</label>
+<button id="next">Next</button>
+</form>
 </body>
-
 </html>
 
+<script>
+    $('#next').click(function (e) {
+        e.preventDefault();
+        data = {};
+        data['rem'] = true;
+        data['qid'] = $('#quiz').val();
+        data['qud'] = $('#quest').val();
+        data['aid'] = $('#aid:checked').val();
+        console.log(data);
+        $.ajax({
+            url: $('#formData').action,
+            type: "POST",
+            data: data,
+            dataType: "json",
+            cache: false,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    })
+</script>

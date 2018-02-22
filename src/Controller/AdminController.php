@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Павел
- * Date: 13.02.2018
- * Time: 10:56
- */
 declare(strict_types=1);
 namespace App\Controller;
 
@@ -23,6 +17,6 @@ class AdminController extends Controller
      */
     public function admin()
     {
-        return new Response($this->renderView('agtemp.html.twig'));
+        return new Response($this->renderView('admin/admin.html.twig'));
     }
 }

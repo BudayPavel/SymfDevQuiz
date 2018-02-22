@@ -6,23 +6,27 @@
             table: "",
             showFields:['id'],
             filterableFields:null,
-            sortableFields:null
+            sortableFields:null,
+            mode: 1
         },options);
 
         let _tools = () => {
-            this.append($(
-                '<div align>' +
+                this.append($(
+                    '<div align>' +
                     '<div align="right">' +
-                        '<input type="text" id="search">' +
-                        '<select id="rows_per_page">' +
-                            '<option>10</option>' +
-                            '<option>25</option>' +
-                            '<option>50</option>' +
-                        '</select>'+
-                            '<button type="button" id="addbtn" data-toggle="modal" data-target="#userForm" class="btn btn-info">Add</button>' +
-                    '</div>'+
-                '</div>'
-            ));
+                    '<input type="text" id="search">' +
+                    '<select id="rows_per_page">' +
+                    '<option>10</option>' +
+                    '<option>25</option>' +
+                    '<option>50</option>' +
+                    '</select>' +
+                    '<button type="button" id="addbtn" data-toggle="modal" data-target="#userForm" class="btn btn-info">Add</button>' +
+                    '</div>' +
+                    '</div>'
+                ));
+            if (options.mode != 1) {
+                $("#addbtn").remove();
+            }
 
             $('#search').keyup(function () {
                 _body(1);
@@ -82,7 +86,7 @@
                 '</div>' +
                 '</div>' +
                 '<div align="right">' +
-                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                '<button type="button" class="btn btn-secondary exit" data-dismiss="modal">Close</button>' +
                 '<button type="submit" class="btn btn-primary save">Done</button>' +
                 '</div>' +
                 '</form>'
@@ -101,6 +105,27 @@
                     e.preventDefault();
                     this.parentElement.parentElement.remove();
                 });
+
+            });
+
+            $('#userForm').on('hidden.bs.modal',function () {
+                if (backhtml === null) {
+                _body(1);
+                } else {
+                    $('.modal-body').empty();
+                    $('.modal-body').append(backhtml);
+                    backhtml = null;
+                    $('#newQuestion').click(function (e) {
+                        e.preventDefault();
+                        addQuestionForm('add', $('.modal-body').html());
+                    });
+                    $('button#deleteRow').click(function (e) {
+                        e.preventDefault();
+                        this.parentElement.parentElement.remove();
+                    });
+
+                    $('#userForm').modal('show');
+                }
 
             });
 
@@ -130,16 +155,10 @@
                     data: send,
                     dataType: "json",
                     cache: false,
-                    success: function(response){
-                         $('#userForm').modal('hide');
-                         if (backhtml === null) {
-                         _body(1);
-                         } else {
-                             $('.modal-body').append(backhtml);
-                         }
-                         $('#userForm').modal('show');
+                    success: function(response) {
+                        $('#userForm').modal('hide');
                     },
-                    error: function (response) {
+                    error: function(response) {
                         console.log(response);
                         $('#formError').text(response.responseJSON['errorMes']);
                     }
@@ -182,10 +201,7 @@
 
             $('#newQuestion').click(function (e) {
                 e.preventDefault();
-                $('#userForm').modal('hide').on('hidden.bs.modal', function () {
-                    addQuestionForm('add', $('.modal-body').html());
-                    $('#userForm').modal('show');
-                });
+                addQuestionForm('add', $('.modal-body').html());
             });
 
             $('button.save').prop('id',action);
@@ -398,6 +414,7 @@
                 dataType: "json",
                 cache: false,
                 success: function (response) {
+                    console.log(response);
                     $('#table-data').remove();
                     $('#pages').remove();
                     _pagination(data['rowCount'], page, response['total']);
@@ -406,6 +423,11 @@
                         return;
                     }
                     let tbody = [];
+
+                    let keys = [];
+                    for (let obj of response['rows']) {
+                        keys.push(obj['id']);
+                    }
 
                     for (let key in response['rows'][0]) {
                         if (contains(options['showFields'],key)) {
@@ -433,11 +455,20 @@
                         }
 
                         let cell = row.insertCell(-1);
-                        $(cell).append($(
-                            '<button id="edit" class="btn btn-warning edit">Edit</button>' +
-                            '<button id="delete" class="btn btn-danger delete">Delete</button>'
-                            )
-                        );
+                        if (options.mode === 1) {
+                            $(cell).append($(
+                                '<button id="edit" class="btn btn-warning edit">Edit</button>' +
+                                '<button id="delete" class="btn btn-danger delete">Delete</button>'
+                                )
+                            );
+                        } else {
+                            let btn = document.createElement('a');
+                            btn.classList.add('btn');
+                            btn.classList.add('btn-success');
+                            btn.innerText = 'Play';
+                            btn.href = "/"+keys[i];
+                            $(cell).append(btn);
+                        }
                         tblbody.appendChild(row);
                     }
 
@@ -633,7 +664,7 @@
 
         };
 
-        this.append('<div class="modal fade" id="userForm" tabindex="-1" role="dialog" aria-labelledby="user" aria-hidden="true">' +
+        this.append('<div class="modal" id="userForm" tabindex="-1" role="dialog" aria-labelledby="user" aria-hidden="true">' +
             '<div class="modal-dialog" role="document">' +
                 '<div class="modal-content">' +
                     '<div class="modal-body">' +
@@ -645,18 +676,9 @@
 
         _tools();
         _table();
-        _header();
+        if (options.mode === 1) {
+            _header();
+        }
         _body(1);
     };
 })(jQuery);
-
-
-$(document).ready(function () {
-    $("#entities-grid").ajaxgrid({
-        'url':'http://quiz.dev/ajax/users',
-        'table': 'user',
-        'showFields':['id','email','firstName','lastName','roles','active'],
-        'filterableFields':['email','firstName','lastName'],
-        'sortableFields':['id','email','firstName','lastName']
-    });
-});

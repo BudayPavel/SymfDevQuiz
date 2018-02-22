@@ -59,16 +59,4 @@ class QuizRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
-
-    public function findQuestions($id):array
-    {
-        return $this->createQueryBuilder('quiz')
-            // p.category refers to the "category" property on product
-            ->innerJoin('quiz.questions', 'quest')
-            // selects all the category data to avoid the query
-            ->andWhere('quiz.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getResult();
-    }
 }
