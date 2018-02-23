@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,9 +38,14 @@ class Answer
 
     /**
      * One Product has Many Features.
-     * @ORM\OneToMany(targetEntity="Result", mappedBy="answer_id")
+     * @ORM\OneToMany(targetEntity="Result", mappedBy="answer_id", cascade={"persist", "remove"})
      */
     private $results;
+
+    public function __construct()
+    {
+        $this->results = new ArrayCollection();
+    }
 
     public function getId()
     {

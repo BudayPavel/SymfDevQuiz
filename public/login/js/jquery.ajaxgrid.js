@@ -11,19 +11,32 @@
         },options);
 
         let _tools = () => {
-                this.append($(
-                    '<div align>' +
-                    '<div align="right">' +
-                    '<input type="text" id="search">' +
-                    '<select id="rows_per_page">' +
-                    '<option>10</option>' +
-                    '<option>25</option>' +
-                    '<option>50</option>' +
-                    '</select>' +
-                    '<button type="button" id="addbtn" data-toggle="modal" data-target="#userForm" class="btn btn-info">Add</button>' +
-                    '</div>' +
-                    '</div>'
-                ));
+            this.append($(
+                '<div class="table-responsive">' +
+                '<div class="dataTables_wrapper container-fluid dt-bootstrap4">' +
+                '<div class="row">' +
+                '      <div class="col-sm-12 col-md-6">' +
+                '           <div class="dataTables_length">' +
+                '               <label>Show' +
+                '               <select id="rows_per_page" class="form-control form-control-sm">' +
+                '                   <option selected="selected">10</option>' +
+                '                   <option>25</option>' +
+                '                   <option>50</option>' +
+                '               </select> entries' +
+                '               </label>' +
+                '           </div>' +
+                '       </div>' +
+                '       <div class="col-sm-12 col-md-6">' +
+                '           <div class="dataTables_filter">' +
+                '               <label>Search: <input id="search" class="form-control form-control-sm" type="text"></label>' +
+                '               <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px">Add</button>' +
+                '           </div>' +
+                '       </div>' +
+                '   </div>' +
+                '</div>' +
+                '</div>'
+            ));
+
             if (options.mode != 1) {
                 $("#addbtn").remove();
             }
@@ -34,7 +47,7 @@
 
             $('#rows_per_page').change(function () {
                 _body(1);
-            })
+            });
 
             $('#addbtn').click(function () {
                 switch (options.table)
@@ -46,15 +59,15 @@
                     case 'question': addQuestionForm('add');
                         break;
                 }
-                }
-            )
+                $('#userForm').modal();
+            });
         };
 
 
         let _table = () => {
             this.append($(
-                '<div class="table-responsive">' +
-                    '<table class="table table-sm table-hover" id="tbl"></table>' +
+                '<div class="dataTable_length">' +
+                    '<table class="table table-bordered dataTable" id="tbl" role="grid" aria-describedby="dataTable_info" width="100%" cellspacing="0"></table>' +
                 '</div>'
             ))
         };
@@ -123,6 +136,47 @@
                         e.preventDefault();
                         this.parentElement.parentElement.remove();
                     });
+                    $('#inputSearch').keyup(function () {
+                        getQuestions();
+                    });
+
+                    $('button.save').click(function (e) {
+                        e.preventDefault();
+                        let send = {};
+                        send['text'] = $('#quiz_name').val();
+                        send['questions']={};
+                        let i = 0;
+                        $('form#quizdata tbody tr').each(function () {
+                            send['questions'][i] = this.cells[0].innerText;
+                            i++
+                        });
+
+                        let link;
+                        if (this.id === 'add') {
+                            link = "http://quiz.dev/ajax/quiz/add";
+                        } else {
+                            send['id'] = $('#quiz_id').val();
+                            send['active'] = $('#quiz_active').is(':checked');
+                            link = "http://quiz.dev/ajax/quiz/update";
+                        }
+
+                        $.ajax({
+                            url: link,
+                            type: "POST",
+                            data: send,
+                            dataType: "json",
+                            cache: false,
+                            success: function(response){
+                                $('#userForm').modal('toggle');
+                                _body(1);
+                            },
+                            error: function (response) {
+                                $('#formError').text(response.responseJSON['errorMes']);
+                            }
+                        });
+                    });
+
+                    getQuestions();
 
                     $('#userForm').modal('show');
                 }
@@ -159,7 +213,6 @@
                         $('#userForm').modal('hide');
                     },
                     error: function(response) {
-                        console.log(response);
                         $('#formError').text(response.responseJSON['errorMes']);
                     }
                 });
@@ -167,6 +220,38 @@
             });
 
 
+        };
+
+        let getQuestions = () => {
+            $.ajax({
+                url: "http://quiz.dev/ajax/question/get",
+                type: "POST",
+                data: {'search':$('#inputSearch').val()},
+                dataType: "json",
+                cache: false,
+                success: function(response){
+                    $('#variants').empty();
+                    for (let q of response) {
+                        $('#variants').append('<span class="dropdown-item" value="'+q['id']+'">'+q['text']+'</span>');
+                    }
+
+                    $('.dropdown-item').click(function () {
+                        $('#quesBody').append($('<tr><td>'+this.getAttribute('value')+'</td><td>'+this.innerHTML+'</td>' +
+                            '<td><button id="deleteRow">X</button></td></tr>'));
+
+                        $('button#deleteRow').click(function (e) {
+                            e.preventDefault();
+                            this.parentElement.parentElement.remove();
+                        });
+
+                        $('#inputSearch').val("");
+                        getQuestions();
+                    });
+
+                },
+                error: function (response) {
+                }
+            })
         };
 
         let addQuizForm = (action) => {
@@ -207,39 +292,6 @@
             $('button.save').prop('id',action);
             if (action === 'add') $('#quiz_a').remove();
 
-            let getQuestions = () => {
-                $.ajax({
-                    url: "http://quiz.dev/ajax/question/get",
-                    type: "POST",
-                    data: {'search':$('#inputSearch').val()},
-                    dataType: "json",
-                    cache: false,
-                    success: function(response){
-                        $('#variants').empty();
-                        for (let q of response) {
-                            $('#variants').append('<span class="dropdown-item" value="'+q['id']+'">'+q['text']+'</span>');
-                        }
-
-                        $('.dropdown-item').click(function () {
-                            $('#quesBody').append($('<tr><td>'+this.getAttribute('value')+'</td><td>'+this.innerHTML+'</td>' +
-                                '<td><button id="deleteRow">X</button></td></tr>'));
-
-                            $('button#deleteRow').click(function (e) {
-                                e.preventDefault();
-                                this.parentElement.parentElement.remove();
-                            });
-
-                            $('#inputSearch').val("");
-                        });
-
-                        _body(1);
-                    },
-                    error: function (response) {
-                        console.log(response);
-                    }
-                })
-            };
-
             $('#inputSearch').keyup(function () {
                getQuestions();
             });
@@ -264,8 +316,6 @@
                     link = "http://quiz.dev/ajax/quiz/update";
                 }
 
-                console.log(send);
-
                 $.ajax({
                     url: link,
                     type: "POST",
@@ -273,12 +323,10 @@
                     dataType: "json",
                     cache: false,
                     success: function(response){
-                        console.log(response);
                         $('#userForm').modal('toggle');
                          _body(1);
                     },
                     error: function (response) {
-                        console.log(response);
                         $('#formError').text(response.responseJSON['errorMes']);
                     }
                 });
@@ -360,7 +408,8 @@
                     }
 
                     let headerCell = document.createElement("th");
-                    headerCell.innerHTML = "Commands";
+                    headerCell.innerHTML = 'Commands';
+                    headerCell.setAttribute('style','width: 150px')
                     row.appendChild(headerCell);
 
                     $('#tbl').append(row);
@@ -388,7 +437,6 @@
                     });
                 },
                 error: function (response) {
-                    console.log(response);
                     alert('Table header error');
                 }
             });
@@ -414,7 +462,6 @@
                 dataType: "json",
                 cache: false,
                 success: function (response) {
-                    console.log(response);
                     $('#table-data').remove();
                     $('#pages').remove();
                     _pagination(data['rowCount'], page, response['total']);
@@ -457,8 +504,8 @@
                         let cell = row.insertCell(-1);
                         if (options.mode === 1) {
                             $(cell).append($(
-                                '<button id="edit" class="btn btn-warning edit">Edit</button>' +
-                                '<button id="delete" class="btn btn-danger delete">Delete</button>'
+                                '<button id="edit" class="btn btn-warning edit" style="width: 70px">Edit</button>' +
+                                '<button id="delete" class="btn btn-danger delete" style="margin-left: 10px; width: 70px">Delete</button>'
                                 )
                             );
                         } else {
@@ -466,7 +513,7 @@
                             btn.classList.add('btn');
                             btn.classList.add('btn-success');
                             btn.innerText = 'Play';
-                            btn.href = "/"+keys[i];
+                            btn.href = "/play/"+keys[i];
                             $(cell).append(btn);
                         }
                         tblbody.appendChild(row);
@@ -549,7 +596,6 @@
                                         $('#userForm').modal();
                                     },
                                     error: function (response) {
-                                        console.log(response);
                                         alert('Delete error');
                                     }
                                 });
@@ -573,7 +619,6 @@
                                             let radio = document.createElement('input');
                                             radio.type = 'radio';
                                             radio.name = 'correct';
-                                            console.log(a);
                                             if (a['right']) {
                                                 radio.checked = true;
                                             }
@@ -583,7 +628,6 @@
                                             btn.innerHTML = 'X';
 
                                             tr.appendChild(td1);
-                                            console.log(radio);
                                             td2.appendChild(radio);
                                             tr.appendChild(td2);
                                             td3.appendChild(btn);
@@ -598,7 +642,6 @@
                                         $('#userForm').modal();
                                     },
                                     error: function (response) {
-                                        console.log(response);
                                         alert('Delete error');
                                     }
                                 });
@@ -608,43 +651,48 @@
 
                 },
                 error: function (response) {
-                    console.log(response);
                     alert('error');
                 }
             });
         };
 
         let _pagination = (row_per_page, current, count) => {
-                let pages = document.createElement('div');
-                pages.id = "pages";
-                pages.setAttribute("class", "pages");
-            if (count != 0) {
-                if (current != 1) {
-                    let prev = document.createElement('a');
-                    prev.id = "prev";
-                    prev.href = "";
-                    prev.text = current - 1;
-                    prev.setAttribute("class", "page");
-                    pages.appendChild(prev);
-                }
-                let cur = document.createElement('a');
-                cur.id = "cur";
-                cur.text = current;
-                pages.appendChild(cur);
-                cur.setAttribute('class', 'cur_page');
-                if (row_per_page * current < count) {
-                    let next = document.createElement('a');
-                    next.id = "next";
-                    next.text = Number(current) + 1;
-                    next.href = "";
-                    next.setAttribute('class', 'page');
-                    pages.appendChild(next);
-                }
-                let all = document.createElement('a');
-                all.id = "all";
-                all.text = "Showing " + (current * row_per_page - row_per_page + 1) + " to " + ((current * row_per_page > count) ? (count) : (current * row_per_page)) + " of " + count + " entries";
+            this.append($(
+               '<div id ="pages" class="dataTables_wrapper container-fluid dt-bootstrap4">\n' +
+                '   <div class="row">\n' +
+                '       <div class="col-sm-12 col-md-5">\n' +
+                '           <div><a id="all">Showing ' + (current * row_per_page - row_per_page + 1) + ' to ' + ((current * row_per_page > count) ? (count) : (current * row_per_page)) + ' of ' + count + ' entries</a></div>\n' +
+                '       </div>\n' +
+                '       <div class="col-sm-12 col-md-7">\n' +
+                '           <div class="dataTables_paginate paging_simple_numbers">\n' +
+                '               <ul class="pagination">\n' +
+                '               </ul>\n' +
+                '           </div>\n' +
+                '        </div>\n' +
+                '    </div>\n' +
+                '</div>'
+            ));
 
-                pages.appendChild(all);
+            if (count != 0) {
+                if (Number(current) > Number(1)) {
+                    let lprev = $('<li class="paginate_button page-item"></li>');
+                    let link = $('<a aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link" id="prev">'+(Number(current)-Number(1))+'</a>');
+                    lprev.append(link);
+                    $('ul.pagination').append(lprev);
+                }
+                let lcur = $('<li class="paginate_button page-item active"></li>');
+                let link = $('<a aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">'+current+'</a>');
+                link.innerHTML = current;
+                lcur.append(link);
+                $('ul.pagination').append(lcur);
+
+                if (row_per_page * current < count) {
+                    let lnext = $('<li class="paginate_button page-item"></li>');
+                    let link = $('<a aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link" id="next">'+(Number(current)+Number(1))+'</a>');
+                    link.innerText = current + 1;
+                    lnext.append(link);
+                    $('ul.pagination').append(lnext);
+                }
             }
             else
             {

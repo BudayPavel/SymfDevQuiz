@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -61,9 +62,19 @@ class User implements UserInterface
 
     /**
      * One Product has Many Features.
-     * @ORM\OneToMany(targetEntity="Result", mappedBy="user_id")
+     * @ORM\OneToMany(targetEntity="Result", mappedBy="user_id", cascade={"persist", "remove"})
      */
     private $results;
+
+    public function __construct()
+    {
+        $result = new ArrayCollection();
+    }
+
+    public function getResults()
+    {
+        return $this->results;
+    }
 
     public function getId()
     {

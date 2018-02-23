@@ -34,13 +34,14 @@ class Question
 
     /**
      * One Product has Many Features.
-     * @ORM\OneToMany(targetEntity="Result", mappedBy="question_id")
+     * @ORM\OneToMany(targetEntity="Result", mappedBy="question_id", cascade={"persist", "remove"})
      */
     private $results;
 
     public function __construct()
     {
         $this->answers = new ArrayCollection();
+        $this->results = new ArrayCollection();
     }
 
     public function getAnswers()

@@ -19,10 +19,9 @@ class AdminController extends Controller
 {
     /**
      * @Route("/administrator")
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function admin()
     {
-        return new Response($this->render('admin/admin.html.twig'));
+        return new Response($this->renderView('admin/admin.html.twig'));
     }
 }

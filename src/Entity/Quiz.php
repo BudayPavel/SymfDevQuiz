@@ -50,13 +50,19 @@ class Quiz
 
     /**
      * One Product has Many Features.
-     * @ORM\OneToMany(targetEntity="Result", mappedBy="quiz_id")
+     * @ORM\OneToMany(targetEntity="Result", mappedBy="quiz_id", cascade={"persist", "remove"})
      */
     private $results;
 
     public function __construct()
     {
         $this->questions = new ArrayCollection();
+        $this->results = new ArrayCollection();
+    }
+
+    public function getResults()
+    {
+        return $this->results;
     }
 
     public function getQuestions()

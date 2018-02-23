@@ -20,6 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
 class UserController extends Controller
 {
 
+    /**
+     * @Route("/authorize", name="authorize")
+     */
     public function show(Request $request) {
 
         if (!is_null($this->getUser()))

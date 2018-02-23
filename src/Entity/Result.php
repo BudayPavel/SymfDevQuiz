@@ -7,9 +7,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\Entity
  * @ORM\Entity(repositoryClass="App\Repository\ResultRepository")
  */
-
 class Result
 {
 
@@ -49,7 +49,32 @@ class Result
     private $answer_id;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="integer")
      */
     private $time;
+
+    public function setUserId($id)
+    {
+        $this->user_id = $id;
+    }
+
+    public function setQuizId($id)
+    {
+        $this->quiz_id = $id;
+    }
+
+    public function setQuestionId($id)
+    {
+        $this->question_id = $id;
+    }
+
+    public function setAnswerId($id)
+    {
+        $this->answer_id = $id;
+    }
+
+    public function setTime($time)
+    {
+        $this->time = $time;
+    }
 }
