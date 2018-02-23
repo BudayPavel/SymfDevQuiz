@@ -18,11 +18,12 @@ class ResultRepository extends ServiceEntityRepository
     public function findQuizTop(Quiz $quiz)
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT count(a.id), u.first_name, u.last_name FROM result r
+        $sql = 'SELECT count(a.id) as c, u.first_name, u.last_name, sum(r.time) as s FROM result r
                 JOIN answer a ON r.answer_id = a.id
                 JOIN user u ON r.user_id = u.id
                 WHERE (a.correct = TRUE) AND (r.quiz_id = :qid)
-                GROUP BY u.first_name, u.last_name
+                GROUP BY u.first_name, u.last_name, r.time
+                ORDER BY c DESC, s DESC
                 LIMIT 10';
         $stmt = $conn->prepare($sql);
         $stmt->execute(['qid' => $quiz->getId()]);

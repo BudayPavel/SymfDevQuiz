@@ -6,6 +6,7 @@ use App\Entity\Answer;
 use App\Entity\Question;
 use App\Entity\Result;
 use App\Entity\Quiz;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,19 +20,21 @@ class MainController extends Controller
      * @Route("", name="main")
      */
     public function showAll(Request $request) {
-        return $this->render('main.html.twig');
+        return $this->render('mainpage/main.html.twig');
     }
 
-    /**
-     * @Route("/sqltest", name="main")
-     */
-    public function sql() {
-        $arr = $this->getDoctrine()->getRepository(Result::class)->findQuizTop(
-            $this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>16])
-        );
-
-        return $this->json($arr, 200);
-    }
+//    /**
+//     * @Route("/sqltest", name="mainaaa")
+//     */
+//    public function sql() {
+////        $arr = $this->getDoctrine()->getRepository(Result::class)->findQuizTop(
+////            $this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>16])
+////        );
+//
+//        $arr = $this->getDoctrine()->getRepository(User::class)->findQuizRes();
+//
+//        return $this->json($arr, 200);
+//    }
 
     /**
      * @Route("/play/{slug}", name="play")

@@ -14,23 +14,6 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * @param $filter
-     * @return User[]
-     */
-    public function findAllByPattern(array $filter, array $sort): array
-    {
-        // automatically knows to select Products
-        // the "p" is an alias you'll use in the rest of the query
-        $qb = $this->createQueryBuilder('p')
-            ->andWhere('p.'.$filter['filter']." LIKE '".$filter['pattern']."%'")
-            //->setParameter('value', $filter['pattern'])
-            ->orderBy('p.'.$sort['sort'], $sort['order'])
-            ->getQuery();
-
-        return $qb->execute();
-    }
-
     public function countFiltered($filter)
     {
         $dql = 'SELECT COUNT(user) FROM App\Entity\User user ';
@@ -76,4 +59,19 @@ class UserRepository extends ServiceEntityRepository
 
         return $query->execute();
     }
+
+//    public function findQuizRes(User $user)
+//    {
+//        $conn = $this->getEntityManager()->getConnection();
+//        $sql = 'SELECT * FROM result r
+//                JOIN answer a ON r.answer_id = a.id
+//                JOIN user u ON r.user_id = u.id
+//                WHERE (a.correct = TRUE) AND (r.quiz_id = :qid)
+//                GROUP BY u.first_name, u.last_name, r.time
+//                ORDER BY c DESC, s DESC
+//                LIMIT 10';
+//        $stmt = $conn->prepare($sql);
+//        $stmt->execute(['qid' => $quiz->getId()]);
+//        return $stmt->fetchAll();
+//    }
 }

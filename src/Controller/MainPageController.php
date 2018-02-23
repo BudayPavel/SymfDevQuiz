@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainPageController extends Controller
 {
     /**
-     * @Route("/mainpage")
+     * @Route("/main")
      */
     public function mainpage()
     {

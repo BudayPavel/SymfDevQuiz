@@ -11,39 +11,36 @@
         },options);
 
         let _tools = () => {
-            this.append($(
-                '<div class="table-responsive">' +
-                '<div class="dataTables_wrapper container-fluid dt-bootstrap4">' +
-                '<div class="row">' +
-                '      <div class="col-sm-12 col-md-6">' +
-                '           <div class="dataTables_length">' +
-                '               <label>Show' +
-                '               <select id="rows_per_page" class="form-control form-control-sm">' +
-                '                   <option selected="selected">10</option>' +
-                '                   <option>25</option>' +
-                '                   <option>50</option>' +
-                '               </select> entries' +
-                '               </label>' +
-                '           </div>' +
-                '       </div>' +
-                '       <div class="col-sm-12 col-md-6">' +
-                '           <div class="dataTables_filter">' +
-                '               <label>Search: <input id="search" class="form-control form-control-sm" type="text"></label>' +
-                '               <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px">Add</button>' +
-                '           </div>' +
-                '       </div>' +
-                '   </div>' +
-                '</div>' +
-                '</div>'
-            ));
+            if (options.mode === 1) {
+                this.append($(
+                    '<div class="table-responsive">' +
+                    '<div class="dataTables_wrapper container-fluid dt-bootstrap4">' +
+                    '<div class="row">' +
+                    '      <div class="col-sm-12 col-md-6">' +
+                    '           <div class="dataTables_length">' +
+                    '               <label>Show' +
+                    '               <select id="rows_per_page" class="form-control form-control-sm">' +
+                    '                   <option selected="selected">10</option>' +
+                    '                   <option>25</option>' +
+                    '                   <option>50</option>' +
+                    '               </select> entries' +
+                    '               </label>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div class="col-sm-12 col-md-6">' +
+                    '           <div class="dataTables_filter">' +
+                    '               <label>Search: <input id="search" class="searchBlock__input text-box ingle-line" name="search" type="text"></label>' +
+                    '               <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px">Add</button>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>' +
+                    '</div>'
+                ));
 
             if (options.mode != 1) {
                 $("#addbtn").remove();
             }
-
-            $('#search').keyup(function () {
-                _body(1);
-            });
 
             $('#rows_per_page').change(function () {
                 _body(1);
@@ -61,13 +58,34 @@
                 }
                 $('#userForm').modal();
             });
+            }
+            else {
+                this.append($('<div>' +
+                    '            <table class="searchBlock__table">' +
+                    '                <tbody>' +
+                    '                <tr>' +
+                    '                    <td>' +
+                    '                        <input class="searchBlock__input text-box single-line" id="search" name="search" type="text">' +
+                    '                    </td>' +
+                    '                    <td class="search" style="vertical-align:middle; width:1px;padding-left:9px;">' +
+                    '                        <div class="searchBlock__searchButton searchButton"></div>' +
+                    '                    </td>' +
+                    '                </tr>' +
+                    '                </tbody>' +
+                    '            </table>' +
+                    '        </div><br>'));
+            }
+
+            $('#search').keyup(function () {
+                _body(1);
+            });
         };
 
 
         let _table = () => {
             this.append($(
                 '<div class="dataTable_length">' +
-                    '<table class="table table-bordered dataTable" id="tbl" role="grid" aria-describedby="dataTable_info" width="100%" cellspacing="0"></table>' +
+                    '<table class="table table-inverse style_table" id="tbl" role="grid" aria-describedby="dataTable_info" width="100%" cellspacing="0"></table>' +
                 '</div>'
             ))
         };
@@ -445,8 +463,12 @@
         let _body = (page) => {
             let data = {};
             data['searchPhrase'] = $('#search').val();
-            data['current'] = page;
-            data['rowCount'] = $('#rows_per_page').val();
+            data['current'] = page
+            if (options.mode === 1) {
+                data['rowCount'] = $('#rows_per_page').val();
+            } else {
+                data['rowCount'] = 15;
+            }
             data['searchableFields'] = options.filterableFields;
             data['orderField'] = $('th.selected').html();
             if ($('th.selected').hasClass('ASC')){
@@ -661,10 +683,10 @@
                '<div id ="pages" class="dataTables_wrapper container-fluid dt-bootstrap4">\n' +
                 '   <div class="row">\n' +
                 '       <div class="col-sm-12 col-md-5">\n' +
-                '           <div><a id="all">Showing ' + (current * row_per_page - row_per_page + 1) + ' to ' + ((current * row_per_page > count) ? (count) : (current * row_per_page)) + ' of ' + count + ' entries</a></div>\n' +
+                '           <div align="left"><p id="all" style="font-size: 12pt; text-decoration: none;">Showing ' + (current * row_per_page - row_per_page + 1) + ' to ' + ((current * row_per_page > count) ? (count) : (current * row_per_page)) + ' of ' + count + ' entries</p></div>\n' +
                 '       </div>\n' +
                 '       <div class="col-sm-12 col-md-7">\n' +
-                '           <div class="dataTables_paginate paging_simple_numbers">\n' +
+                '           <div class="dataTables_paginate paging_simple_numbers" align="right">\n' +
                 '               <ul class="pagination">\n' +
                 '               </ul>\n' +
                 '           </div>\n' +
@@ -672,6 +694,10 @@
                 '    </div>\n' +
                 '</div>'
             ));
+            if (options.mode === 0)
+            {
+                $('#all').css('color','#fff')
+            }
 
             if (count != 0) {
                 if (Number(current) > Number(1)) {
@@ -721,12 +747,9 @@
                     '</div>' +
                 '</div>' +
             '</div>');
-
         _tools();
         _table();
-        if (options.mode === 1) {
-            _header();
-        }
+        _header();
         _body(1);
     };
 })(jQuery);
