@@ -60,18 +60,61 @@ class UserRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-//    public function findQuizRes(User $user)
-//    {
-//        $conn = $this->getEntityManager()->getConnection();
-//        $sql = 'SELECT * FROM result r
-//                JOIN answer a ON r.answer_id = a.id
-//                JOIN user u ON r.user_id = u.id
-//                WHERE (a.correct = TRUE) AND (r.quiz_id = :qid)
-//                GROUP BY u.first_name, u.last_name, r.time
-//                ORDER BY c DESC, s DESC
-//                LIMIT 10';
-//        $stmt = $conn->prepare($sql);
-//        $stmt->execute(['qid' => $quiz->getId()]);
-//        return $stmt->fetchAll();
-//    }
+    public function findQuizRes($params)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT q.id, q.name AS Name, Ali2.Correct, Ali3.Total, sum(r.time) AS Time FROM result r
+                JOIN quiz q ON q.id = r.quiz_id
+                JOIN (SELECT count(a.id) as useranswers, q.id as qid FROM result r
+                    JOIN answer a ON r.answer_id = a.id
+                    JOIN quiz q ON q.id = r.quiz_id
+                    WHERE (r.user_id = :uid) 
+                    GROUP BY qid) AS Ali1 ON Ali1.qid=q.id
+                JOIN (SELECT count(a.id) as Correct, q.id as qid FROM result r
+                    JOIN answer a ON r.answer_id = a.id
+                    JOIN quiz q ON q.id = r.quiz_id
+                    WHERE (a.correct = TRUE) AND (r.user_id = :uid)
+                    GROUP BY q.id) AS Ali2 ON Ali2.qid=q.id
+                JOIN (SELECT count(qq2.question_id) as Total, qz.id as qid FROM quiz qz
+                    JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
+                    JOIN question que ON que.id=qq2.question_id
+                    GROUP BY qz.id) AS Ali3 ON Ali3.qid=q.id
+                WHERE (r.user_id = :uid)   
+                GROUP BY q.id, q.name, Ali2.Correct, Ali3.Total
+                LIMIT '.$params['records_per_page'].'
+                OFFSET '.$params['start'].'
+                ';
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['uid' => $params['user']]);
+        return $stmt->fetchAll();
+    }
+
+    public function countQuizRes($params)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT q.name AS Name, Ali2.Correct, Ali3.Total, sum(r.time) AS Time FROM result r
+                JOIN quiz q ON q.id = r.quiz_id
+                JOIN (SELECT count(a.id) as useranswers, q.id as qid FROM result r
+                    JOIN answer a ON r.answer_id = a.id
+                    JOIN quiz q ON q.id = r.quiz_id
+                    WHERE (r.user_id = :uid) 
+                    GROUP BY qid) AS Ali1 ON Ali1.qid=q.id
+                JOIN (SELECT count(a.id) as Correct, q.id as qid FROM result r
+                    JOIN answer a ON r.answer_id = a.id
+                    JOIN quiz q ON q.id = r.quiz_id
+                    WHERE (a.correct = TRUE) AND (r.user_id = :uid)
+                    GROUP BY q.id) AS Ali2 ON Ali2.qid=q.id
+                JOIN (SELECT count(qq2.question_id) as Total, qz.id as qid FROM quiz qz
+                    JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
+                    JOIN question que ON que.id=qq2.question_id
+                    GROUP BY qz.id) AS Ali3 ON Ali3.qid=q.id
+                WHERE (r.user_id = :uid)   
+                GROUP BY q.name, Ali2.Correct, Ali3.Total
+                ';
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['uid' => $params['user']]);
+        return count($stmt->fetchAll());
+    }
 }

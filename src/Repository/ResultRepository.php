@@ -15,6 +15,21 @@ class ResultRepository extends ServiceEntityRepository
         parent::__construct($registry, Result::class);
     }
 
+    public function findTop()
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT count(a.id) as Answers, u.first_name as Firstname, u.last_name as Surname FROM result r
+                JOIN answer a ON r.answer_id = a.id
+                JOIN user u ON r.user_id = u.id
+                WHERE (a.correct = TRUE)
+                GROUP BY u.first_name, u.last_name
+                ORDER BY c DESC, s DESC
+                LIMIT 3';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function findQuizTop(Quiz $quiz)
     {
         $conn = $this->getEntityManager()->getConnection();

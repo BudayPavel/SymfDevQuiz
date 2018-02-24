@@ -22,6 +22,6 @@ class AdminController extends Controller
      */
     public function admin()
     {
-        return new Response($this->renderView('admin/admin.html.twig'));
+        return new Response($this->renderView('admin.html.twig'));
     }
 }

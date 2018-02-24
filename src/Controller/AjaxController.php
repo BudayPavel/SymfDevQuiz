@@ -116,6 +116,7 @@ class AjaxController extends Controller
                 $user->setFirstName($request->get('user')['firstName']);
                 $user->setLastName($request->get('user')['lastName']);
                 $user->setRoles($request->get('user')['role']);
+                if (isset($request->get('user')['active']))
                 $user->setActive($request->get('user')['active']);
                 $user->setRoles($request->get('user')['role']);
                 if (!isset($request->get('user')['active'])) {
@@ -301,4 +302,91 @@ class AjaxController extends Controller
         $em->flush();
         return $this->json(['result' => 'success'], Response::HTTP_OK);
     }
+
+    /**
+     * @Route("/quiz/notfinished")
+     *
+     */
+    public function notFinished()
+    {
+        $params = array(
+            'start' => 0,
+            'current_page_number' => 1,
+            'records_per_page' => 5,
+        );
+        $params['user'] = $this->getUser()->getId();
+        $params['current_page_number'] = 1;
+        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+        $params['user']=$this->getUser()->getId();
+
+        $repository = $this->getDoctrine()->getRepository(Quiz::class);
+        $arr = $repository->findNotFinshed($params);
+
+        //var_dump($arr);
+        $output = array(
+            'current' => $params['current_page_number'],
+            'rowCount' => $params['records_per_page'],
+            'total' => $repository->countNotFinshed($params),
+            'rows' => $arr
+        );
+        return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+    }
+
+    /**
+     * @Route("/quiz/notstarted")
+     *
+     */
+    public function notStarted()
+    {
+        $params = array(
+            'start' => 0,
+            'current_page_number' => 1,
+            'records_per_page' => 5,
+        );
+        $params['user'] = $this->getUser()->getId();
+        $params['current_page_number'] = 1;
+        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+        $params['user']=$this->getUser()->getId();
+
+        $repository = $this->getDoctrine()->getRepository(Quiz::class);
+        $arr = $repository->findNotStarted($params);
+
+        $output = array(
+            'current' => $params['current_page_number'],
+            'rowCount' => $params['records_per_page'],
+            'total' => $repository->countNotStarted($params),
+            'rows' => $arr
+        );
+        return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+    }
+
+    /**
+     * @Route("/quiz/finished")
+     *
+     */
+    public function finished()
+    {
+        $params = array(
+            'start' => 0,
+            'current_page_number' => 1,
+            'records_per_page' => 5,
+        );
+        $params['user'] = $this->getUser()->getId();
+        $params['current_page_number'] = 1;
+        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+        $params['user']=$this->getUser()->getId();
+
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $arr = $repository->findQuizRes($params);
+
+        $output = array(
+            'current' => $params['current_page_number'],
+            'rowCount' => $params['records_per_page'],
+            'total' => $repository->countQuizRes($params),
+            'rows' => $arr
+        );
+        return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+    }
+
+
 }

@@ -35,7 +35,7 @@ class UserController extends Controller
         $pform = $this->createForm(PassRestore::class);
 
         return $this->render(
-            'registration/auth.html.twig',
+            'auth.html.twig',
             array(
                 'rform' => $rform->createView(),
                 'lform' => $lform->createView(),

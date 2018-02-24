@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 class MainController extends Controller
@@ -20,21 +21,16 @@ class MainController extends Controller
      * @Route("", name="main")
      */
     public function showAll(Request $request) {
-        return $this->render('mainpage/main.html.twig');
+        return $this->render('main.html.twig');
     }
 
-//    /**
-//     * @Route("/sqltest", name="mainaaa")
-//     */
-//    public function sql() {
-////        $arr = $this->getDoctrine()->getRepository(Result::class)->findQuizTop(
-////            $this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>16])
-////        );
-//
-//        $arr = $this->getDoctrine()->getRepository(User::class)->findQuizRes();
-//
-//        return $this->json($arr, 200);
-//    }
+    /**
+     * @Route("/myquiz", name="myQuiz")
+     */
+    public function sql() {
+
+        return $this->render('results.html.twig');
+    }
 
     /**
      * @Route("/play/{slug}", name="play")
@@ -85,6 +81,20 @@ class MainController extends Controller
 
 
         }
+    }
+
+    /**
+     * @Route("/replay/{slug}", name="replay")
+     */
+    public function restartQuiz(Request $request, $slug)
+    {
+        $result = $this->getDoctrine()->getRepository(Result::class)->findBy(['user_id' => $this->getUser()->getId(), 'quiz_id' => $slug]);
+        $em = $this->getDoctrine()->getManager();
+        foreach ($result as $res) {
+            $em->remove($res);
+        }
+        $em->flush();
+        return new RedirectResponse($this->generateUrl('play',['slug' => $slug]));
     }
 
 

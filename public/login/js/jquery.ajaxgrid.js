@@ -7,59 +7,63 @@
             showFields:['id'],
             filterableFields:null,
             sortableFields:null,
-            mode: 1
+            mode: 0
         },options);
 
         let _tools = () => {
-            if (options.mode === 1) {
+            if (options.mode === 0) {
                 this.append($(
                     '<div class="table-responsive">' +
                     '<div class="dataTables_wrapper container-fluid dt-bootstrap4">' +
                     '<div class="row">' +
-                    '      <div class="col-sm-12 col-md-6">' +
+                    '      <div class="col-sm-12 col-md-1"><label>Rows</label></div>' +
+                    '               ' +
+                    '      <div class="col-sm-12 col-md-2">' +
                     '           <div class="dataTables_length">' +
-                    '               <label>Show' +
                     '               <select id="rows_per_page" class="form-control form-control-sm">' +
                     '                   <option selected="selected">10</option>' +
                     '                   <option>25</option>' +
                     '                   <option>50</option>' +
-                    '               </select> entries' +
-                    '               </label>' +
+                    '               </select>' +
                     '           </div>' +
                     '       </div>' +
-                    '       <div class="col-sm-12 col-md-6">' +
-                    '           <div class="dataTables_filter">' +
-                    '               <label>Search: <input id="search" class="searchBlock__input text-box ingle-line" name="search" type="text"></label>' +
-                    '               <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px">Add</button>' +
-                    '           </div>' +
+                    '       <div class="col-sm-12 col-md-1"><label>Search:</label></div>' +
+                    '       <div class="col-sm-12 col-md-7">' +
+                    '           <input id="search" class="searchBlock__input text-box ingle-line" name="search" type="text">' +
+                    '       </div>' +
+                    '       <div class="col-sm-12 col-md-1">' +
+                    '          <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px; width: 60px;">Add</button>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>' +
-                    '</div>'
+                    '</div>' +
+                    '<br>'
                 ));
 
-            if (options.mode != 1) {
+            if (options.mode != 0) {
                 $("#addbtn").remove();
             }
 
-            $('#rows_per_page').change(function () {
+            this.find('#rows_per_page').change(() => {
                 _body(1);
             });
 
-            $('#addbtn').click(function () {
-                switch (options.table)
-                {
-                    case 'user': addUserForm('add');
+            this.find('#addbtn').click((e) => {
+                e.preventDefault();
+                switch (options.table) {
+                    case 'user':
+                        addUserForm('add');
                         break;
-                    case 'quiz': addQuizForm('add');
+                    case 'quiz':
+                        addQuizForm('add');
                         break;
-                    case 'question': addQuestionForm('add');
+                    case 'question':
+                        addQuestionForm('add');
                         break;
                 }
-                $('#userForm').modal();
+                this.find('#userForm').modal();
             });
-            }
-            else {
+            } else {
                 this.append($('<div>' +
                     '            <table class="searchBlock__table">' +
                     '                <tbody>' +
@@ -76,7 +80,7 @@
                     '        </div><br>'));
             }
 
-            $('#search').keyup(function () {
+            this.find('#search').keyup(() => {
                 _body(1);
             });
         };
@@ -227,7 +231,7 @@
                     data: send,
                     dataType: "json",
                     cache: false,
-                    success: function(response) {
+                    success: function() {
                         $('#userForm').modal('hide');
                     },
                     error: function(response) {
@@ -340,7 +344,7 @@
                     data: send,
                     dataType: "json",
                     cache: false,
-                    success: function(response){
+                    success: function(){
                         $('#userForm').modal('toggle');
                          _body(1);
                     },
@@ -410,13 +414,13 @@
                 data: "",
                 dataType: "json",
                 cache: false,
+                obj:this,
                 success: function (response) {
-                    let theader = [];
                     let row = document.createElement('thead');
                     row.classList.add('thead-dark');
 
                     for (let key in response['rows'][0]) {
-                        if (contains(options['showFields'],key)) {
+                        if (contains(options['showFields'], key)) {
                             let headerCell = document.createElement("TH");
                             headerCell.id = "header";
                             headerCell.classList.add('notselected');
@@ -424,16 +428,16 @@
                             row.appendChild(headerCell);
                         }
                     }
-
+                    if (response['rows'].length != 0){
                     let headerCell = document.createElement("th");
                     headerCell.innerHTML = 'Commands';
-                    headerCell.setAttribute('style','width: 150px')
+                    headerCell.setAttribute('style', 'width: 150px')
                     row.appendChild(headerCell);
 
-                    $('#tbl').append(row);
+                    this.obj.find('#tbl').append(row);
 
-                    $('th').click(function () {
-                        if (options.sortableFields.findIndex( i => i === this.innerHTML) != -1) {
+                    this.obj.find('th').click(function () {
+                        if (options.sortableFields != null && options.sortableFields.findIndex(i => i === this.innerHTML) != -1) {
 
                             if (this.classList.contains('selected')) {
                                 if (this.classList.contains('ASC')) {
@@ -453,8 +457,10 @@
                             _body(1);
                         }
                     });
+                }
                 },
                 error: function (response) {
+                    console.log(response);
                     alert('Table header error');
                 }
             });
@@ -462,16 +468,23 @@
 
         let _body = (page) => {
             let data = {};
-            data['searchPhrase'] = $('#search').val();
-            data['current'] = page
-            if (options.mode === 1) {
-                data['rowCount'] = $('#rows_per_page').val();
-            } else {
-                data['rowCount'] = 15;
+            data['searchPhrase'] = this.find('#search').val();
+            data['current'] = page;
+            switch (options.mode)
+            {
+                case 0: data['rowCount'] = this.find('#rows_per_page').val();
+                    break;
+                case 1: data['rowCount'] = 10;
+                    break;
+                case 2: data['rowCount'] = 5;
+                    break;
+                case 3: data['rowCount'] = 10;
+                    break;
             }
+
             data['searchableFields'] = options.filterableFields;
-            data['orderField'] = $('th.selected').html();
-            if ($('th.selected').hasClass('ASC')){
+            data['orderField'] = this.find('th.selected').html();
+            if (this.find('th.selected').hasClass('ASC')){
                 data['order'] = 'ASC';
             } else {
                 data['order'] = 'DESC';
@@ -483,11 +496,13 @@
                 data: data,
                 dataType: "json",
                 cache: false,
+                obj: this,
                 success: function (response) {
-                    $('#table-data').remove();
-                    $('#pages').remove();
+                    console.log(response);
+                     this.obj.find('#table-data').remove();
+                     this.obj.find('#pages').remove();
                     _pagination(data['rowCount'], page, response['total']);
-
+                    console.log(response);
                     if (response['rows'].length === 0) {
                         return;
                     }
@@ -524,26 +539,27 @@
                         }
 
                         let cell = row.insertCell(-1);
-                        if (options.mode === 1) {
-                            $(cell).append($(
-                                '<button id="edit" class="btn btn-warning edit" style="width: 70px">Edit</button>' +
-                                '<button id="delete" class="btn btn-danger delete" style="margin-left: 10px; width: 70px">Delete</button>'
+                        switch (options.mode){
+                            case 0:
+                                $(cell).append($(
+                                '<button id="edit" class="btn btn-warning edit" style="width: 60px">Edit</button>' +
+                                '<button id="delete" class="btn btn-danger delete" style="margin-left: 10px; width: 60px">Delete</button>'
                                 )
-                            );
-                        } else {
-                            let btn = document.createElement('a');
-                            btn.classList.add('btn');
-                            btn.classList.add('btn-success');
-                            btn.innerText = 'Play';
-                            btn.href = "/play/"+keys[i];
-                            $(cell).append(btn);
+                                );
+                                break;
+                            case 1: $(cell).append('<a style="width:90px" class="btn btn-success" href="/play/'+keys[i]+'">Play</a>');
+                                break;
+                            case 2: $(cell).append('<a style="width:90px" class="btn btn-warning" href="/play/'+keys[i]+'">Continue</a>');
+                                break;
+                            case 3: $(cell).append('<a style="width:90px" class="btn btn-warning" href="/replay/'+keys[i]+'">Replay</a>');
+                                break;
                         }
                         tblbody.appendChild(row);
                     }
 
-                    $('#tbl').append(tblbody);
+                    this.obj.find('#tbl').append(tblbody);
 
-                    $('button.delete').click(function (e) {
+                    this.obj.find('button.delete').click(function (e) {
                         if (confirm("Delete record?")) {
                             let param = {
                                         'id': this.parentElement.parentElement.children[0].innerHTML
@@ -564,7 +580,7 @@
                             }
                     });
 
-                    $('button.edit').click(function (e) {
+                    this.obj.find('button.edit').click(function (e) {
                         e.preventDefault();
                         let row = this.parentElement.parentElement.childNodes;
                         switch (options.table) {
@@ -680,10 +696,10 @@
 
         let _pagination = (row_per_page, current, count) => {
             this.append($(
-               '<div id ="pages" class="dataTables_wrapper container-fluid dt-bootstrap4">\n' +
+                '<div id ="pages" class="dataTables_wrapper container-fluid dt-bootstrap4">\n' +
                 '   <div class="row">\n' +
                 '       <div class="col-sm-12 col-md-5">\n' +
-                '           <div align="left"><p id="all" style="font-size: 12pt; text-decoration: none;">Showing ' + (current * row_per_page - row_per_page + 1) + ' to ' + ((current * row_per_page > count) ? (count) : (current * row_per_page)) + ' of ' + count + ' entries</p></div>\n' +
+                '           <div align="left"><p id="all" style="color: #fff; font-size: 12pt; text-decoration: none;">Showing ' + (current * row_per_page - row_per_page + 1) + ' to ' + ((current * row_per_page > count) ? (count) : (current * row_per_page)) + ' of ' + count + ' entries</p></div>\n' +
                 '       </div>\n' +
                 '       <div class="col-sm-12 col-md-7">\n' +
                 '           <div class="dataTables_paginate paging_simple_numbers" align="right">\n' +
@@ -694,44 +710,39 @@
                 '    </div>\n' +
                 '</div>'
             ));
-            if (options.mode === 0)
-            {
-                $('#all').css('color','#fff')
-            }
 
             if (count != 0) {
                 if (Number(current) > Number(1)) {
                     let lprev = $('<li class="paginate_button page-item"></li>');
                     let link = $('<a aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link" id="prev">'+(Number(current)-Number(1))+'</a>');
                     lprev.append(link);
-                    $('ul.pagination').append(lprev);
+                    this.find('ul.pagination').append(lprev);
                 }
                 let lcur = $('<li class="paginate_button page-item active"></li>');
                 let link = $('<a aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link">'+current+'</a>');
                 link.innerHTML = current;
                 lcur.append(link);
-                $('ul.pagination').append(lcur);
+                this.find('ul.pagination').append(lcur);
 
                 if (row_per_page * current < count) {
                     let lnext = $('<li class="paginate_button page-item"></li>');
                     let link = $('<a aria-controls="dataTable" data-dt-idx="1" tabindex="0" class="page-link" id="next">'+(Number(current)+Number(1))+'</a>');
                     link.innerText = current + 1;
                     lnext.append(link);
-                    $('ul.pagination').append(lnext);
+                    this.find('ul.pagination').append(lnext);
                 }
             }
             else
             {
-                pages.innerHTML = "<label>No data found</label>";
+                this.find('#pages').html("<label>No data found</label>");
             }
-            this.append(pages);
 
-            $('#prev').click(function (e) {
+            this.find('#prev').click(function (e) {
                 e.preventDefault();
                 _body(this.text);
             });
 
-            $('#next').click(function (e) {
+            this.find('#next').click(function (e) {
                 e.preventDefault();
                 _body(this.text);
             });
@@ -747,7 +758,11 @@
                     '</div>' +
                 '</div>' +
             '</div>');
-        _tools();
+
+
+        if (options.mode != 2) {
+            _tools();
+        }
         _table();
         _header();
         _body(1);
