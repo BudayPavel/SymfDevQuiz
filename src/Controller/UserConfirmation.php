@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
+use Symfony\Component\Routing\Annotation\Route;
 
 class UserConfirmation extends Controller
 {
+    /**
+     * @Route("/mailsent")
+     */
     public function indexAction( \Swift_Mailer $mailer)
     {
         $message = (new \Swift_Message('Hello Email'))

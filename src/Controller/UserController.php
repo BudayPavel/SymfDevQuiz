@@ -43,9 +43,11 @@ class UserController extends Controller
     public function signUp(
         Request $request,
         UserPasswordEncoderInterface $passwordEncoder,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        \Swift_Mailer $mailer
     ) {
         $user = new User();
+        $form = $this->createForm(UserType::class, $user);
         $user->setEmail($request->get('user')['email']);
         $user->setFirstName($request->get('user')['firstName']);
         $user->setLastName($request->get('user')['lastName']);
@@ -61,9 +63,25 @@ class UserController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
+
             return $this->redirectToRoute('authorize');
         }
+        if ($form->isSubmitted()) {
+            // ... выполните любую другую работу - отправку электронных писем и т.д.
+            $message = (new \Swift_Message('Hello Email'))
+                ->setFrom('2345pawel@gmail.com')
+                ->setTo('2345pawel@mail.ru')
+                ->setBody(
+                    $this->renderView(
+                    // templates/emails/registration.html.twig
+                        'emails/registration.html.twig'),
+                    'text/html'
+                )
+            ;
 
+            $mailer->send($message);
+
+        }
         return new Response("<H1>Email already taken</H1>", 400);
     }
 

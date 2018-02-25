@@ -10,13 +10,6 @@ home:
     path: /home
     controller: App\Controller\HomePage::home
 
-mailsent:
-    path: /mailsent
-    controller: App\Controller\UserConfirmation::indexAction
-
-admin:
-    path: /admin
-    controller: App\Controller\AdminController::admin
 
 authorize:
     path: /authorize
