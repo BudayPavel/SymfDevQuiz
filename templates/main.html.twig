@@ -26,19 +26,29 @@
                 <li id="lectures">
                     <a href="{{ path('myQuiz') }}">My quiz</a>
                 </li>
+
                 {% endblock %}
             </ul>
 
+            {% block exit %}
             <div class="right">
                 <ul>
-                    {% block exit %}
-                    <li>
-                        <a href="{{ path('logout') }}">Logout</a>
-                    </li>
-                    {% endblock %}
-                </ul>
+                        <li>
+                            <a href="{{ path('logout') }}">Logout</a>
+                        </li>
 
+                </ul>
             </div>
+            <div class="rightone">
+                <ul>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li>
+                            <a href="{{ path('administrator') }}">Admin panel</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endblock %}
         </div>
     </div>
 </header>

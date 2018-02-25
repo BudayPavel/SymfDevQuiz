@@ -18,7 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class AdminController extends Controller
 {
     /**
-     * @Route("/administrator")
+     * @Route("/administrator", name="administrator")
      */
     public function admin()
     {

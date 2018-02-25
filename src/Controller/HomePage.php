@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Result;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,6 +15,7 @@ class HomePage extends Controller
      */
     public function home()
     {
-        return new Response($this->renderView('homepage/home.html.twig'));
+        $users = $this->getDoctrine()->getRepository(Result::class)->findTop();
+        return new Response($this->renderView('homepage/home.html.twig',['users'=>$users]));
     }
 }

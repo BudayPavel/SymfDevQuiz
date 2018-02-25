@@ -23,8 +23,8 @@ class ResultRepository extends ServiceEntityRepository
                 JOIN user u ON r.user_id = u.id
                 WHERE (a.correct = TRUE)
                 GROUP BY u.first_name, u.last_name
-                ORDER BY c DESC, s DESC
-                LIMIT 3';
+                ORDER BY Answers DESC
+                LIMIT 5';
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();

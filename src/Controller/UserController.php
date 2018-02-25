@@ -27,7 +27,7 @@ class UserController extends Controller
 
         if (!is_null($this->getUser()))
         {
-            return $this->redirectToRoute('/');
+            return $this->redirectToRoute('main');
         }
 
         $rform = $this->createForm(UserType::class);

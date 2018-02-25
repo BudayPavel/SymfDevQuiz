@@ -55,7 +55,7 @@ class MainController extends Controller
     public function test()
     {
         $repository = $this->getDoctrine()->getRepository(Result::class);
-        $arr = $repository->findQuizTop($this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>16]));
+        $arr = $repository->findTop();
 
         return $this->json($arr,200);
     }
