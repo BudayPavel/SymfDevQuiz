@@ -1,0 +1,39 @@
+<html lang="en" >
+
+<head>
+    <title>Welcome!</title>
+    {% block stylesheets %}
+        <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans:600'>
+        <link rel="stylesheet" href="/login/css/style.css">
+        <script type="text/javascript" src="/login/js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="/login/js/scripts.js"></script>
+    {% endblock %}
+</head>
+
+<body>
+{% block body %}
+<div class="login-wrap">
+    <div class="login-html">
+        <input id="tab-3" type="radio" name="tab" class="sign-out" checked><label for="tab-3" class="tab">Password Recovery</label>
+        <div class="login-form">
+            <div class="sign-out-htm">
+                <label class="label">{{ mes_two }}</label>
+                {{ form_start(form, {'attr':{ 'action':action,'id':'password_recovery'}}) }}
+                <div class="group">
+                    {{ form_widget(form.plainPassword.first, {'attr':{'class':'input', 'placeholder':'Password'}}) }}
+                </div>
+                <div class="group">
+                    {{ form_widget(form.plainPassword.second, {'attr':{'class':'input', 'placeholder':'Repeat Password'}}) }}
+                </div>
+                <br>
+                <div class="group">
+                    {{ form_widget(form.submit, {'attr':{'class':'button'}}) }}
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
