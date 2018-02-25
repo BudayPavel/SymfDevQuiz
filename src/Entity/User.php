@@ -7,9 +7,9 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity
@@ -40,6 +40,10 @@ class User implements AdvancedUserInterface
      */
     private $password;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $active_res = false;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -69,7 +73,7 @@ class User implements AdvancedUserInterface
 
     public function __construct()
     {
-        $result = new ArrayCollection();
+        $results = new ArrayCollection();
     }
 
     public function getResults()
@@ -107,6 +111,15 @@ class User implements AdvancedUserInterface
         $this->password = $password;
     }
 
+    public function setActiveRes($active_res)
+    {
+        $this->active_res = $active_res;
+    }
+    public function isActiveRes()
+    {
+        return $this->active_res;
+    }
+
     public function getFirstName()
     {
         return $this->firstName;
@@ -129,21 +142,13 @@ class User implements AdvancedUserInterface
 
     public function getSalt()
     {
-        // The bcrypt and argon2i algorithms don't require a separate salt.
-        // You *may* need a real salt if you choose a different encoder.
         return null;
     }
 
-    // other methods, including security methods like getRoles()
     public function getRoles()
     {
         return array($this->role);
     }
-
-//    public function getRole()
-//    {
-//        return $this->role;
-//    }
 
     public function setRoles($role)
     {
@@ -185,6 +190,6 @@ class User implements AdvancedUserInterface
 
     public function isEnabled()
     {
-        return $this->isActive();
+        return $this->active;
     }
 }
