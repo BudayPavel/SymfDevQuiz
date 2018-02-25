@@ -38,7 +38,10 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=64)
      */
     private $password;
-
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $active_res = false;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -105,7 +108,14 @@ class User implements UserInterface
     {
         $this->password = $password;
     }
-
+    public function setActive_res($active_res)
+    {
+        $this->active_res = $active_res;
+    }
+    public function isActive_res()
+    {
+        return $this->active_res;
+    }
     public function getFirstName()
     {
         return $this->firstName;

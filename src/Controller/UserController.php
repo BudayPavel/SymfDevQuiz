@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\PasRecovery;
 use App\Form\PassRestore;
 use App\Form\UserLogin;
 use App\Form\UserType;
@@ -28,7 +29,7 @@ class UserController extends Controller
 
         if (!is_null($this->getUser()))
         {
-            return $this->redirectToRoute('/');
+            return $this->redirectToRoute('main');
         }
 
         $rform = $this->createForm(UserType::class);
@@ -94,20 +95,30 @@ class UserController extends Controller
     }
 
     /**
+     *
      * @Route("/authorize/forget", name="forget")
      */
     public function restorePass(
-        Request $request
+        Request $request,
+        \Swift_Mailer $mailer
     ) {
         $repository = $this->getDoctrine()->getRepository(User::class);
-        $arr = $repository->findBy(['email' => $request->get('pass_restore')['email']]);
-
-        if (count($arr) == 1) {
-            //send mail
-            echo 'true';
+        $arr = $repository->findOneBy(['email' => $request->get('pass_restore')['email']]);
+        if ($arr != null) {
+            $message = (new \Swift_Message('Password Recovery'))
+                ->setFrom('2345pawel@gmail.com')
+                ->setTo($request->get('pass_restore')['email'])
+                ->setBody(
+                    $this->renderView(
+                        'emails/recovery_pas.html.twig',
+                        array('email' => $request->get('pass_restore')['email'])),
+                    'text/html');
+            $mailer->send($message);
+            $em = $this->getDoctrine()->getManager();
+            $arr->setActive_res(false);
+            $em->flush();
             return new Response("",200);
         }
-        echo 'fllase';
         return new Response("", 400);
     }
     /**
@@ -118,7 +129,7 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
         if ($user != null){
             if ($user->isActive()){
-                return new RedirectResponse('/');
+                return $this->redirectToRoute('main');
             }else{
                 $user->setActive(true);
                 $em->flush();
@@ -131,6 +142,52 @@ class UserController extends Controller
                 array('mes_one' => "Ошибка!",
                     'mes_two' => "Такой ссылки не существет.")));
         }
+
+    }
+
+    /**
+     * @Route("/recovery", name="recovery")
+     */
+    public function form_rec(Request $request) {
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $request->query->get('email')]);
+        if ($user->isActive_res()){
+            return $this->redirectToRoute('main');
+        }
+        $form = $this->createForm(PasRecovery::class);
+
+        $router =$this->get('router');
+        $uri = $router->generate('recovery_password', array('email' => $request->query->get('email')));
+
+        return $this->render(
+            'recoverypas.html.twig',
+            array(
+                'form' => $form->createView(),'mes_two' => "", 'action' => $uri
+            )
+        );
+    }
+    /**
+     * @Route("/recovery/password", name="recovery_password")
+     */
+    public function recoverypas(Request $request,
+                                UserPasswordEncoderInterface $passwordEncoder){
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $request->query->get('email')]);
+
+        $em = $this->getDoctrine()->getManager();
+
+            if ($request->get('pas_recovery')['plainPassword']['first'] === $request->get('pas_recovery')['plainPassword']['second']) {
+                $user->setPassword($passwordEncoder->encodePassword($user, $request->get('pas_recovery')['plainPassword']['first']));
+    //            return $this->JSON(['l'=>$request->get('user')['plainPassword']['first']], 200);
+                $user->setActive_res(true);
+                $em->flush();
+                return new Response($this->renderView('mainpage/finishReg.html.twig',
+                    array('mes_one' => "Поздарвляем!",
+                        'mes_two' => "Вы успешно обнавили пороль")));
+            } else {
+                return new Response($this->renderView('recoverypas.html.twig',
+                    array('mes_two' => "Error...")));
+            }
+
+
 
     }
 }
