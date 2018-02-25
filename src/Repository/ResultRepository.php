@@ -1,0 +1,47 @@
+<?php
+declare(strict_types=1);
+namespace App\Repository;
+
+use App\Entity\Result;
+use App\Entity\Quiz;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+
+class ResultRepository extends ServiceEntityRepository
+{
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, Result::class);
+    }
+
+    public function findTop()
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT count(a.id) as Answers, u.first_name as Firstname, u.last_name as Surname FROM result r
+                JOIN answer a ON r.answer_id = a.id
+                JOIN user u ON r.user_id = u.id
+                WHERE (a.correct = TRUE)
+                GROUP BY u.first_name, u.last_name
+                ORDER BY c DESC, s DESC
+                LIMIT 3';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function findQuizTop(Quiz $quiz)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT count(a.id) as Points, u.first_name as Firstname, u.last_name as Surname, sum(r.time) as Time FROM result r
+                JOIN answer a ON r.answer_id = a.id
+                JOIN user u ON r.user_id = u.id
+                WHERE (a.correct = TRUE) AND (r.quiz_id = :qid)
+                GROUP BY u.first_name, u.last_name, r.time
+                ORDER BY Points DESC, Time DESC
+                LIMIT 10';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['qid' => $quiz->getId()]);
+        return $stmt->fetchAll();
+    }
+}

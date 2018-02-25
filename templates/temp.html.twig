@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Admin page</title>
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script type ="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/login/js/jquery.ajaxgrid.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div id="game">
+    {% if done != true %}
+        <h1>{{ quiz.name }}</h1>
+        <label id="question">{{ question.text }}</label>
+        <br>
+        <form action="quiz.dev/play/{{ qid }}" id="formData">
+        <input type="text" id="quest" value="{{ question.id }}" hidden/>
+        <div id="answers">
+        {% for answer in question.answers %}
+        <input type="radio" id="aid" name="aid" value="{{ answer.id }}"> {{ answer.text }}<br>
+        {% endfor %}
+        </div>
+        <label id="cur">{{ cur }}</label> of <label>{{ quiz.questions|length }}</label>
+        <button id="next">Next</button>
+        </form>
+    {% else %}
+        <h1>Done</h1>
+    {% endif %}
+</div>
+</body>
+</html>
+
+<script>
+    let PreviousDownTimeX = 0;
+    $('#next').click(function (e) {
+        e.preventDefault();
+        data = {};
+        data['rem'] = true;
+        data['qud'] = $('#quest').val();
+        data['aid'] = $('#aid:checked').val();
+        data['cur'] = $('#cur').text();
+
+        if (!PreviousDownTimeX) PreviousDownTimeX = new Date ().getTime (); else
+        {
+            let CurrentDownTimeX = new Date().getTime();
+            alert ('Клавиатура задействована через ' + (CurrentDownTimeX - PreviousDownTimeX) + ' мс после предыдущего нажатия.');
+            PreviousDownTimeX = CurrentDownTimeX;
+        }
+
+        data['time'] = 10;
+        console.log(data);
+        $.ajax({
+            url: $('#formData').action,
+            type: "POST",
+            data: data,
+            dataType: "json",
+            cache: false,
+            success: function (response) {
+                console.log(response);
+                switch (response['cur']) {
+                    case -1: alert('Choose your answer');
+                        break;
+                    case 0:
+                        $('#game').empty().append('<h1>Done</h1>');
+                        break;
+                    default:
+                        $('#question').text(response['question']['text']);
+                        $('#cur').text(response['cur']);
+                        $('#quest').val(response['question']['id']);
+                        $('#answers').empty();
+                        for (let ans of response['answers']) {
+                            $('#answers').append('<input type="radio" id="aid" name="aid" value="'+ans['id']+'">'+ans['text']+'<br>');
+                        }
+                        break;
+                }
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    })
+</script>

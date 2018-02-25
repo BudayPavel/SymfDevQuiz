@@ -5,12 +5,3 @@ logout:
     path: /logout
 signin_user:
     path: /authorize/signin
-
-home:
-    path: /home
-    controller: App\Controller\HomePage::home
-
-
-authorize:
-    path: /authorize
-    controller: App\Controller\UserController::show

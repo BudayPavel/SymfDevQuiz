@@ -1,0 +1,29 @@
+{% extends 'main.html.twig' %}
+
+{% block menuactive %}
+    <li id="home">
+        <a href="{{ path('main') }}">Main</a>
+    </li>
+    <li id="lectures_active">
+        <a href="{{ path('myQuiz') }}">My quiz</a>
+    </li>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="mainContentLayout">
+        <h1 style="color: #fff;">Finished quizes</h1>
+        <br>
+        <div class="searchBlock" id="resultTable">
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    $('#resultTable').ajaxgrid({
+    'url':'http://quiz.dev/quiz/finished',
+    'table':'quiz',
+    'showFields':['Name','Correct','Total','Time'],
+    'filterableFields':['Name'],
+    'mode':3
+    })
+{% endblock %}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -11,6 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(fields="email", message="Email already taken")
  */
 class User implements UserInterface
@@ -28,12 +30,6 @@ class User implements UserInterface
      * @Assert\Email()
      */
     private $email;
-
-    /**
-     *
-     * @Assert\Length(max=4096)
-     */
-    private $plainPassword;
 
     /**
      * The below length depends on the "algorithm" you use for encoding
@@ -64,6 +60,27 @@ class User implements UserInterface
      */
     private $active = false;
 
+    /**
+     * One Product has Many Features.
+     * @ORM\OneToMany(targetEntity="Result", mappedBy="user_id", cascade={"persist", "remove"})
+     */
+    private $results;
+
+    public function __construct()
+    {
+        $result = new ArrayCollection();
+    }
+
+    public function getResults()
+    {
+        return $this->results;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getEmail()
     {
         return $this->email;
@@ -77,16 +94,6 @@ class User implements UserInterface
     public function getUsername()
     {
         return $this->email;
-    }
-
-    public function getPlainPassword()
-    {
-        return $this->plainPassword;
-    }
-
-    public function setPlainPassword($password)
-    {
-        $this->plainPassword = $password;
     }
 
     public function getPassword()
@@ -131,6 +138,11 @@ class User implements UserInterface
     {
         return array($this->role);
     }
+
+//    public function getRole()
+//    {
+//        return $this->role;
+//    }
 
     public function setRoles($role)
     {

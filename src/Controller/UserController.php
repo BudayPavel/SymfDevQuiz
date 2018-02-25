@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\PassRestore;
 use App\Form\UserLogin;
 use App\Form\UserType;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -18,6 +21,9 @@ use Symfony\Component\HttpFoundation\Response;
 class UserController extends Controller
 {
 
+    /**
+     * @Route("/authorize", name="authorize")
+     */
     public function show(Request $request) {
 
         if (!is_null($this->getUser()))
@@ -27,12 +33,14 @@ class UserController extends Controller
 
         $rform = $this->createForm(UserType::class);
         $lform = $this->createForm(UserLogin::class);
+        $pform = $this->createForm(PassRestore::class);
 
         return $this->render(
-            'registration/auth.html.twig',
+            'auth.html.twig',
             array(
                 'rform' => $rform->createView(),
                 'lform' => $lform->createView(),
+                'pform' => $pform->createView(),
             )
         );
     }
@@ -47,14 +55,19 @@ class UserController extends Controller
         \Swift_Mailer $mailer
     ) {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
         $user->setEmail($request->get('user')['email']);
         $user->setFirstName($request->get('user')['firstName']);
         $user->setLastName($request->get('user')['lastName']);
+        if (isset($request->get('user')['role'])) {
+            $user->setRoles($request->get('user')['role']);
+        }
+//        if (isset($request->get('user')['active']) && $request->get('user')['active'] === 'on') {
+//            $user->setActive(true);
+//        }
         if ($request->get('user')['plainPassword']['first'] === $request->get('user')['plainPassword']['second']) {
             $user->setPassword($passwordEncoder->encodePassword($user, $request->get('user')['plainPassword']['first']));
         } else {
-            return new Response("Password doesn't match",400);
+            return $this->json(['errorMes'=>'Passwords does not match'], 400);
         }
 
         $errors = $validator->validate($user);
@@ -63,27 +76,61 @@ class UserController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
-            return $this->redirectToRoute('authorize');
-        }
-        if ($form->isSubmitted()) {
-            // ... выполните любую другую работу - отправку электронных писем и т.д.
             $message = (new \Swift_Message('Hello Email'))
                 ->setFrom('2345pawel@gmail.com')
-                ->setTo('2345pawel@mail.ru')
+                ->setTo($request->get('user')['email'])
                 ->setBody(
                     $this->renderView(
-                    // templates/emails/registration.html.twig
-                        'emails/registration.html.twig'),
-                    'text/html'
-                )
-            ;
-
+                        'emails/registration.html.twig',
+                        array('name' => $request->get('user')['firstName'],
+                              'hash' => $user->getPassword())),
+                    'text/html');
             $mailer->send($message);
 
+            return new JsonResponse(['success'=>'Success! Check your email!'],200);
         }
-        return new Response("<H1>Email already taken</H1>", 400);
+
+        return new JsonResponse(['errorMes' => 'Email already used'],400);
     }
 
+    /**
+     * @Route("/authorize/forget", name="forget")
+     */
+    public function restorePass(
+        Request $request
+    ) {
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $arr = $repository->findBy(['email' => $request->get('pass_restore')['email']]);
 
+        if (count($arr) == 1) {
+            //send mail
+            echo 'true';
+            return new Response("",200);
+        }
+        echo 'fllase';
+        return new Response("", 400);
+    }
+    /**
+     * @Route("/finishreg", name="finishreg")
+     */
+    public function finishreg(Request $request){
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['password' => $request->query->get('hash')]);
+        $em = $this->getDoctrine()->getManager();
+        if ($user != null){
+            if ($user->isActive()){
+                return new RedirectResponse('/');
+            }else{
+                $user->setActive(true);
+                $em->flush();
+                return new Response($this->renderView('mainpage/finishReg.html.twig',
+                    array('mes_one' => "Поздравляем",
+                          'mes_two' => "Вы успешно прошли регистрацию. Для прохождения викторины перейдите на главную страницу.")));
+            }
+        }else{
+            return new Response($this->renderView('mainpage/finishReg.html.twig',
+                array('mes_one' => "Ошибка!",
+                    'mes_two' => "Такой ссылки не существет.")));
+        }
+
+    }
 }

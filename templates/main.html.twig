@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Quiz</title>
+    <meta charset="utf-8">
+    {% block css %}
+        <link rel="stylesheet" type="text/css" href="/mainpage/css/style.css">
+    {% endblock %}
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/login/js/jquery.ajaxgrid.js"></script>
+
+
+</head>
+<body style="background-color:#626992;">
+<header>
+    <div class="fixed-top">
+        <div id="menu-container" class="centered">
+            <ul>
+                {% block menuactive %}
+                <li id="home_active">
+                    <a href="{{ path('main') }}">Main</a>
+                </li>
+                <li id="lectures">
+                    <a href="{{ path('myQuiz') }}">My quiz</a>
+                </li>
+                {% endblock %}
+            </ul>
+
+            <div class="right">
+                <ul>
+                    {% block exit %}
+                    <li>
+                        <a href="{{ path('logout') }}">Logout</a>
+                    </li>
+                    {% endblock %}
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</header>
+{% block pagecontent %}
+<div class="ContentLayout">
+    <p class="for_p">Not finished</p>
+    <div class="searchBlock" id="notfinished">
+
+    </div>
+</div>
+
+<div class="mainContentLayout">
+    <h1 style="color: #fff;">Quiz list</h1>
+    <br>
+    <div class="searchBlock" id="entities-grid">
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
+
+<script>
+    {% block scripts %}
+    $('div#entities-grid').ajaxgrid({
+        'url':'http://quiz.dev/quiz/notstarted',
+        'table':'quiz',
+        'showFields':['name'],
+        'filterableFields':['name'],
+        'mode':1
+    });
+
+    $('div#notfinished').ajaxgrid({
+        'url':'http://quiz.dev/quiz/notfinished',
+        'table':'quiz',
+        'showFields':['Name', 'Answered', 'Total', 'Time'],
+        'filterableFields':['name'],
+        'mode':2
+    })
+    {% endblock %}
+</script>
