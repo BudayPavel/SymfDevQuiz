@@ -1,76 +1,155 @@
-<html>
-<head>
-    <title>Quiz</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="/begin_quiz/css/style.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-</head>
-<body style="background-color:#626992;">
-<header>
-    <div class="fixed-top">
-        <div id="menu-container" class="centered">
-            <ul>
-                <li id="home" class="">
-                    <a href="index_main.html">Главная</a>
-                </li>
-                <li id="lectures" class="active">
-                    <a href="#">Викторины</a>
-                </li>
-            </ul>
-            <div class="right">
-                <ul>
-                    <li>
-                        <a href="#">Выйти</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-</header>
-<div class="mainContentLayout">
-    <h1 style="color: #fff;">Начать викторину</h1>
-    <br>
+{% extends 'main.html.twig' %}
 
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="/play_quiz/css/style.css">
+{% endblock %}
+
+{% block menuactive %}
+    <li id="home">
+        <a href="{{ path('main') }}">Main</a>
+    </li>
+    <li id="lectures">
+        <a href="{{ path('myQuiz') }}">My quiz</a>
+    </li>
+{% endblock %}
+
+{% block pagecontent %}
+    <div class="mainContentLayout" >
+    <h3 style="color: #fff;" id="qname">Start playing</h3>
+        <input type="text" value="{{ quiz.id }}" id="qid" hidden>
+    <br>
     <div class="bodyLayout">
-        <div class="bodyLayout__CenterCol">
-            <div class="infoBlock infoBlock--center">
-                <div class="gameDetails__TextCol">
-                    <h1 style="color: #fff;">Головой по голове</h1>
-                    <h4 style="color: #fff;">Нажмите на кнопку "Запустить игру" чтобы начать...</h4>
-                </div>
-                <div class="gameActions">
-                    <div class="gameActions__StartGameCol">
-                        <a class="font-size batton batton-primary" style="font-size:16px;">Запустить игру</a>
-                    </div>
-                    <div class="gameActions__StopGameCol">
-                        <a class="batton batton-default" style="border-color: #adadad;font-size:16px;">Выход</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bodyLayout__RightCol">
-            <div class="infoBlock infoBlock--right infoBlock--rules">
-                <div class="gameRules">
-                    <div class="gameRules__Header">Как играть:</div>
-                    <ol>
-                        <li class="gameRules__ListItem">Как только игра будет запущена, Вам будет показан вопрос и несколько вариантов ответа.
-                            <ul>
-                                <li class="lis_style_type_circle">Может быть только один правильный ответ</li>
-                            </ul>
-                        </li>
-                        <li class="gameRules__ListItem">Выход из непроденной игры будет автоматические сохранён
-                            <ul>
-                                <li class="lis_style_type_circle">Прожолжить игру можно будет перейдя по вкладке "Викторины"</li>
-                            </ul>
-                        </li>
-                        <li class="gameRules__ListItem">В конце игры Вам будет показан Лидерборд.</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
+    <div class="bodyLayout__CenterCol" id="btncontainer">
+    <div class="infoBlock infoBlock--center" id="gamefield">
+    <div class="gameDetails__TextCol">
+    <h3 id="tmpqname" style="color: #fff;">{{ quiz.name }}</h3>
+    <h4 style="color: #fff;">Click start button for begin!</h4>
+    </div>
+    <div class="gameActions">
+    <div class="gameActions__StartGameCol">
+        <button class="btn btn-success" id="start">Start</button>
+    {#<a class="font-size batton batton-primary" style="font-size:16px;" id="getquestion" value="{{ quiz.id }}">Start</a>#}
+    </div>
+    <div class="gameActions__StopGameCol">
+    <a class="batton batton-default" style="border-color: #adadad;font-size:16px;" id="back">Back</a>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="bodyLayout__RightCol">
+    <div class="infoBlock infoBlock--right infoBlock--rules">
+    <div class="gameRules">
+    <div class="gameRules__Header">Как играть:</div>
+    <ol>
+    <li class="gameRules__ListItem">Как только игра будет запущена, Вам будет показан вопрос и несколько вариантов ответа.
+    <ul>
+    <li class="lis_style_type_circle">Может быть только один правильный ответ</li>
+    </ul>
+    </li>
+    <li class="gameRules__ListItem">Выход из непроденной игры будет автоматические сохранён
+    <ul>
+    <li class="lis_style_type_circle">Прожолжить игру можно будет перейдя по вкладке "Викторины"</li>
+    </ul>
+    </li>
+    <li class="gameRules__ListItem">В конце игры Вам будет показан Лидерборд.</li>
+    </ol>
+    </div>
+    </div>
+    </div>
     </div>
 
-</div>
-</body>
-</html>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+{#<script>#}
+
+function getTable() {
+    $('#gamefield').empty();
+    $('#temp').remove();
+    $('#gamefield').ajaxgrid({
+    'url':'http://quiz.dev/play/' + $('#qid').val()+'/top',
+    'showFields':['Firstname', 'Surname', 'Points', 'Time'],
+    'filterableFields':['name'],
+    'mode': 4
+    })
+};
+
+    $('#start').click(function(e) {
+        $.ajax({
+            url: "http://quiz.dev/play/" + $('#qid').val(),
+            type: "POST",
+            data: {'rem': false},
+            dataType: "json",
+            cache: false,
+            success: function (response) {
+                console.log(response);
+                $('#qname').text($('#tmpqname').text());
+                $('#gamefield').empty().append('' +
+                    '<div class="gameDetails__TextCol">' +
+                    '   <h3 style="color: #fff;">'+response["question"]+'</h3>' +
+                    '   <input id="qud" type="text" value="'+response['qud']+'" hidden>' +
+                    '</div>');
+                for (let ans of response['answers']){
+                    $('#gamefield').append(
+                        '<div class="answerButton">' +
+                        '   <div class="answerButton__LeftLine" for="aid'+ans['id']+'">' +
+                        '       <input class="aid" name="option" id="aid'+ans['id']+'" type="radio" value="'+ans['id']+'">' +
+                        '       <div for="aid'+ans['id']+'" class="answerButton__Text">' +
+                        '           <label for="aid'+ans['id']+'" class="marg-style" style="width: 100%;">'+ans['text']+'</label>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</div>');
+                }
+    $('#btncontainer').append('<div class="container" id="temp"><div class="col-sm-10 col-md-8"><h4 id="pos" style="color:#fff; display: inline-block">'+response['cur']+'</h4>&nbsp;&nbsp;<h4 style="color:#fff; display: inline-block"> of&nbsp;&nbsp;'+response['total']+'</h4></div>' +
+    '<div class="col-sm-10 col-md-4"><button type="submit" class="btn btn-success btn-block" id="next">Next</button></div></div>');
+
+                $('#next').click(function () {
+                    let send = {};
+                    send['rem'] = true;
+                    send['qud'] = $('#qud').val();
+                    send['aid'] = $('.aid:checked').val();
+                    send['cur'] = $('#pos').text();
+                    console.log(send);
+                    $.ajax({
+                        url: "http://quiz.dev/play/" + $('#qid').val(),
+                        type: "POST",
+                        data: send,
+                        dataType: "json",
+                        cache: false,
+                        success: function (response) {
+                            console.log(response);
+                            switch (response['cur']) {
+                                case -1: alert('Choose answer!');
+                                    break;
+                                case 0: getTable();
+                                    break;
+                                default:
+                                $('#gamefield').empty().append('' +
+                                        '<div class="gameDetails__TextCol">' +
+                                        '   <h3 style="color: #fff;">'+response["question"]+'</h3>' +
+                                        '   <input id="qud" type="text" value="' + response['qud'] + '" hidden>' +
+                                        '</div>');
+                                    for (let ans of response['answers']) {
+                                        $('#gamefield').append(
+                                        '<div class="answerButton">' +
+                                        '   <div class="answerButton__LeftLine" for="aid'+ans['id']+'">' +
+                                            '       <input class="aid" name="option" id="aid'+ans['id']+'" type="radio" value="'+ans['id']+'">' +
+                                            '       <div for="aid'+ans['id']+'" class="answerButton__Text">' +
+                                                '           <label for="aid'+ans['id']+'" class="marg-style" style="width: 100%;">'+ans['text']+'</label>' +
+                                                '       </div>' +
+                                            '   </div>' +
+                                        '</div>');
+                                        $('#pos').text(response['cur']);
+                                    }
+                                    break;
+                            }
+                        }
+                    });
+                })
+            },
+        });
+
+    });
+{% endblock %}

@@ -428,12 +428,12 @@
                             row.appendChild(headerCell);
                         }
                     }
-                    if (response['rows'].length != 0){
+                    if (response['rows'].length != 0 && options.mode != 4 ){
                     let headerCell = document.createElement("th");
                     headerCell.innerHTML = 'Commands';
                     headerCell.setAttribute('style', 'width: 150px')
                     row.appendChild(headerCell);
-
+                    }
                     this.obj.find('#tbl').append(row);
 
                     this.obj.find('th').click(function () {
@@ -457,7 +457,7 @@
                             _body(1);
                         }
                     });
-                }
+
                 },
                 error: function (response) {
                     console.log(response);
@@ -501,6 +501,7 @@
                     console.log(response);
                      this.obj.find('#table-data').remove();
                      this.obj.find('#pages').remove();
+                     if (options.mode != 4)
                     _pagination(data['rowCount'], page, response['total']);
                     console.log(response);
                     if (response['rows'].length === 0) {
@@ -760,7 +761,7 @@
             '</div>');
 
 
-        if (options.mode != 2) {
+        if (options.mode != 2 && options.mode!=4) {
             _tools();
         }
         _table();

@@ -74,6 +74,7 @@ class UserController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
+
             return new JsonResponse(['success'=>'Success! Check your email!'],200);
         }
 
