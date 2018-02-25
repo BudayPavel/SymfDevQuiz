@@ -408,10 +408,13 @@
         };
 
         let _header = () => {
+            let data = {};
+            data['rowCount'] = 1;
+            data['current'] = 1;
             $.ajax({
                 url: options.url,
                 type: "POST",
-                data: "",
+                data: data,
                 dataType: "json",
                 cache: false,
                 obj:this,
@@ -474,11 +477,9 @@
             {
                 case 0: data['rowCount'] = this.find('#rows_per_page').val();
                     break;
-                case 1: data['rowCount'] = 10;
-                    break;
                 case 2: data['rowCount'] = 5;
                     break;
-                case 3: data['rowCount'] = 10;
+                default: data['rowCount'] = 10;
                     break;
             }
 
@@ -503,7 +504,6 @@
                      this.obj.find('#pages').remove();
                      if (options.mode != 4)
                     _pagination(data['rowCount'], page, response['total']);
-                    console.log(response);
                     if (response['rows'].length === 0) {
                         return;
                     }
@@ -548,9 +548,9 @@
                                 )
                                 );
                                 break;
-                            case 1: $(cell).append('<a style="width:90px" class="btn btn-success" href="/play/'+keys[i]+'">Play</a>');
+                            case 1: $(cell).append('<a style="width:90px" class="btn btn-success" href="/play?quiz='+keys[i]+'">Play</a>');
                                 break;
-                            case 2: $(cell).append('<a style="width:90px" class="btn btn-warning" href="/play/'+keys[i]+'">Continue</a>');
+                            case 2: $(cell).append('<a style="width:90px" class="btn btn-warning" href="/play?quiz='+keys[i]+'">Continue</a>');
                                 break;
                             case 3: $(cell).append('<a style="width:90px" class="btn btn-warning" href="/replay/'+keys[i]+'">Replay</a>');
                                 break;
@@ -754,14 +754,13 @@
             '<div class="modal-dialog" role="document">' +
                 '<div class="modal-content">' +
                     '<div class="modal-body">' +
-
                     '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>');
 
 
-        if (options.mode != 2 && options.mode!=4) {
+        if (options.mode ===0) {
             _tools();
         }
         _table();

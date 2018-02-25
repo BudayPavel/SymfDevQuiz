@@ -85,6 +85,10 @@ function getTable() {
             cache: false,
             success: function (response) {
                 console.log(response);
+                if (response['cur'] === 0) {
+                    getTable();
+                    return;
+                }
                 $('#qname').text($('#tmpqname').text());
                 $('#gamefield').empty().append('' +
                     '<div class="gameDetails__TextCol">' +

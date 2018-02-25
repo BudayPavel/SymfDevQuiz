@@ -307,22 +307,21 @@ class AjaxController extends Controller
      * @Route("/quiz/notfinished")
      *
      */
-    public function notFinished()
+    public function notFinished(Request $request)
     {
         $params = array(
             'start' => 0,
             'current_page_number' => 1,
             'records_per_page' => 5,
         );
-        $params['user'] = $this->getUser()->getId();
-        $params['current_page_number'] = 1;
+        $params['current_page_number'] = $request->get('current');
+        $params['records_per_page'] = $request->get('rowCount');
         $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
         $params['user']=$this->getUser()->getId();
 
         $repository = $this->getDoctrine()->getRepository(Quiz::class);
         $arr = $repository->findNotFinshed($params);
 
-        //var_dump($arr);
         $output = array(
             'current' => $params['current_page_number'],
             'rowCount' => $params['records_per_page'],
@@ -336,7 +335,7 @@ class AjaxController extends Controller
      * @Route("/quiz/notstarted")
      *
      */
-    public function notStarted()
+    public function notStarted(Request $request)
     {
         $params = array(
             'start' => 0,
@@ -344,9 +343,9 @@ class AjaxController extends Controller
             'records_per_page' => 5,
         );
         $params['user'] = $this->getUser()->getId();
-        $params['current_page_number'] = 1;
+        $params['current_page_number'] = $request->get('current');
+        $params['records_per_page'] = $request->get('rowCount');
         $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
-        $params['user']=$this->getUser()->getId();
 
         $repository = $this->getDoctrine()->getRepository(Quiz::class);
         $arr = $repository->findNotStarted($params);

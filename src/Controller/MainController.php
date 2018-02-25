@@ -43,7 +43,10 @@ class MainController extends Controller
             $em->remove($res);
         }
         $em->flush();
-        return new RedirectResponse($this->generateUrl('play',['slug' => $slug]));
+
+        $router = $this->get('router');
+        $uri = $router->generate('start', array('quiz' => $slug));
+        return new RedirectResponse($uri);
     }
 
 

@@ -64,20 +64,22 @@ class QuizRepository extends ServiceEntityRepository
     public function findNotFinshed($params): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT myQuiz.id, myQuiz.name as Name, Ali1.qc as Answered, Ali2.total as Total, Ali1.sumtime as Time FROM quiz myQuiz
-                JOIN (SELECT q.id as idd, q.name, count(r.question_id) AS qc,sum(r.time) as sumtime, r.user_id FROM (quiz q
-                JOIN quiz_questions qq ON q.id = qq.quiz_id
-                JOIN question qu ON qq.question_id=qu.id
-                JOIN result r ON (q.id = r.quiz_id) AND (qu.id = r.question_id))
-                WHERE (r.user_id = :uid)
-                GROUP BY q.id, q.name, r.user_id) AS Ali1 ON Ali1.idd=myQuiz.id
-                JOIN (SELECT count(qq2.question_id) as total, qz.id as quizid FROM quiz qz
-                                            JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
-                                            JOIN question que ON que.id=qq2.question_id
-                                            GROUP BY qz.id) AS Ali2 ON Ali2.quizid=myQuiz.id
-                WHERE Ali1.qc < Ali2.total
+        $sql = 'SELECT q.id, q.name AS Name, Ali1.Answers, Ali3.Total, sum(r.time) AS Time FROM result r
+                JOIN quiz q ON q.id = r.quiz_id
+                JOIN (SELECT count(a.id) as Answers, q.id as qid FROM result r
+                    JOIN answer a ON r.answer_id = a.id
+                    JOIN quiz q ON q.id = r.quiz_id
+                    WHERE (r.user_id = :uid) 
+                    GROUP BY qid) AS Ali1 ON Ali1.qid=q.id
+                JOIN (SELECT count(qq2.question_id) as Total, qz.id as qid FROM quiz qz
+                    JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
+                    JOIN question que ON que.id=qq2.question_id
+                    GROUP BY qz.id) AS Ali3 ON Ali3.qid=q.id
+                WHERE (r.user_id = :uid) AND (Ali1.Answers < Ali3.Total)   
+                GROUP BY q.id, q.name, Ali1.Answers, Ali3.Total
                 LIMIT '.$params['records_per_page'].'
                 OFFSET '.$params['start'];
+
         $stmt = $conn->prepare($sql);
         $stmt->execute(['uid' => $params['user'],]);
         return $stmt->fetchAll();
@@ -86,18 +88,19 @@ class QuizRepository extends ServiceEntityRepository
     public function countNotFinshed($params)
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT myQuiz.id, myQuiz.name as Name, Ali1.Answered, Ali2.Total, Ali1.sumtime as Time FROM quiz myQuiz
-                JOIN (SELECT q.id as idd, q.name, count(r.question_id) AS Answered,sum(r.time) as sumtime, r.user_id FROM (quiz q
-                JOIN quiz_questions qq ON q.id = qq.quiz_id
-                JOIN question qu ON qq.question_id=qu.id
-                JOIN result r ON (q.id = r.quiz_id) AND (qu.id = r.question_id))
-                WHERE (r.user_id = :uid)
-                GROUP BY q.id, q.name, r.user_id) AS Ali1 ON Ali1.idd=myQuiz.id
-                JOIN (SELECT count(qq2.question_id) as total, qz.id as quizid FROM quiz qz
-                                            JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
-                                            JOIN question que ON que.id=qq2.question_id
-                                            GROUP BY qz.id) AS Ali2 ON Ali2.quizid=myQuiz.id
-                WHERE Ali1.Answered < Ali2.Total';
+        $sql = 'SELECT q.id, q.name AS Name, Ali1.Answers, Ali3.Total, sum(r.time) AS Time FROM result r
+                JOIN quiz q ON q.id = r.quiz_id
+                JOIN (SELECT count(a.id) as Answers, q.id as qid FROM result r
+                    JOIN answer a ON r.answer_id = a.id
+                    JOIN quiz q ON q.id = r.quiz_id
+                    WHERE (r.user_id = :uid) 
+                    GROUP BY qid) AS Ali1 ON Ali1.qid=q.id
+                JOIN (SELECT count(qq2.question_id) as Total, qz.id as qid FROM quiz qz
+                    JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
+                    JOIN question que ON que.id=qq2.question_id
+                    GROUP BY qz.id) AS Ali3 ON Ali3.qid=q.id
+                WHERE (r.user_id = :uid) AND (Ali1.Answers < Ali3.Total)   
+                GROUP BY q.id, q.name, Ali1.Answers, Ali3.Total';
 
         $stmt = $conn->prepare($sql);
         $stmt->execute(['uid' => $params['user'],]);
@@ -109,6 +112,7 @@ class QuizRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT * FROM quiz quz
                 WHERE quz.id NOT IN (SELECT res.quiz_id FROM result res GROUP BY res.quiz_id)
+                AND (quz.active = TRUE )
                 LIMIT '.$params['records_per_page'].'
                 OFFSET '.$params['start'];
 
@@ -121,7 +125,8 @@ class QuizRepository extends ServiceEntityRepository
     {
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT * FROM quiz quz
-                WHERE quz.id NOT IN (SELECT res.quiz_id FROM result res GROUP BY res.quiz_id)';
+                WHERE quz.id NOT IN (SELECT res.quiz_id FROM result res GROUP BY res.quiz_id)
+                AND (quz.active = TRUE )';
 
         $stmt = $conn->prepare($sql);
         $stmt->execute(['uid' => $params['user']]);

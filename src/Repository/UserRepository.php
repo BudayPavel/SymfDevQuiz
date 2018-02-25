@@ -79,7 +79,7 @@ class UserRepository extends ServiceEntityRepository
                     JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
                     JOIN question que ON que.id=qq2.question_id
                     GROUP BY qz.id) AS Ali3 ON Ali3.qid=q.id
-                WHERE (r.user_id = :uid)   
+                WHERE (r.user_id = :uid) AND (Ali1.useranswers = Ali3.Total)   
                 GROUP BY q.id, q.name, Ali2.Correct, Ali3.Total
                 LIMIT '.$params['records_per_page'].'
                 OFFSET '.$params['start'].'
@@ -109,7 +109,7 @@ class UserRepository extends ServiceEntityRepository
                     JOIN quiz_questions qq2 ON qz.id=qq2.quiz_id
                     JOIN question que ON que.id=qq2.question_id
                     GROUP BY qz.id) AS Ali3 ON Ali3.qid=q.id
-                WHERE (r.user_id = :uid)   
+                WHERE (r.user_id = :uid) AND (Ali1.useranswers = Ali3.Total)   
                 GROUP BY q.name, Ali2.Correct, Ali3.Total
                 ';
 

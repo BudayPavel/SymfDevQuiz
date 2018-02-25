@@ -21,11 +21,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayQuizController extends Controller
 {
     /**
-     * @Route("/play")
+     * @Route("/play", name="start")
      */
-    public function beginquiz()
+    public function beginquiz(Request $request)
     {
-        return new Response($this->renderView('mainpage/beginQuiz.html.twig',['quiz'=>$this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>16])]));
+        return new Response($this->renderView('mainpage/beginQuiz.html.twig',['quiz'=>$this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>$request->query->get('quiz')])]));
     }
 
     /**
@@ -33,19 +33,22 @@ class PlayQuizController extends Controller
      */
     public function startQuiz(Request $request, $slug) {
         $quiz = $this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id' => $slug]);
-        //$result = count($this->getDoctrine()->getRepository(Result::class)->findBy(['user_id' => $this->getUser()->getId(), 'quiz_id' => $slug]));
+        $result = count($this->getDoctrine()->getRepository(Result::class)->findBy(['user_id' => $this->getUser()->getId(), 'quiz_id' => $slug]));
+        if ($result === count($quiz->getQuestions())) {
+            return $this->json(['cur' => 0],200);
+        }
         if ($request->get('rem') != 'true') {
                 $out = [];
                 $out['quiz'] = $quiz->getName();
                 $out['qid'] = $quiz->getId();
-                $out['question'] = $quiz->getQuestions()[0]->getText();
-                $out['qud'] = $quiz->getQuestions()[0]->getId();
+                $out['question'] = $quiz->getQuestions()[$result]->getText();
+                $out['qud'] = $quiz->getQuestions()[$result]->getId();
                 $out['answers'] = [];
-                foreach ($quiz->getQuestions()[0]->getAnswers() as $ans){
+                foreach ($quiz->getQuestions()[$result]->getAnswers() as $ans){
                     array_push($out['answers'], ['id' => $ans->getId(),'text' => $ans->getText()]);
                 }
                 $out['total'] = count($quiz->getQuestions());
-                $out['cur'] = 1;
+                $out['cur'] = $result+1;
                 return $this->json($out, 200);
         } else {
             if ($request->get('aid') != null) {

@@ -66,16 +66,14 @@
         'url':'http://quiz.dev/quiz/notstarted',
         'table':'quiz',
         'showFields':['name'],
-        'filterableFields':['name'],
         'mode':1
     });
 
     $('div#notfinished').ajaxgrid({
         'url':'http://quiz.dev/quiz/notfinished',
         'table':'quiz',
-        'showFields':['Name', 'Answered', 'Total', 'Time'],
-        'filterableFields':['name'],
+        'showFields':['Name', 'Answers', 'Total', 'Time'],
         'mode':2
-    })
+    });
     {% endblock %}
 </script>
