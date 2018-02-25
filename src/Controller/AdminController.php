@@ -19,6 +19,7 @@ class AdminController extends Controller
 {
     /**
      * @Route("/administrator", name="administrator")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function admin()
     {

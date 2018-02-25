@@ -462,8 +462,7 @@
                     });
 
                 },
-                error: function (response) {
-                    console.log(response);
+                error: function () {
                     alert('Table header error');
                 }
             });

@@ -12,8 +12,13 @@ $(document).ready(function () {
             success: function(){
                 window.location.replace("/");
             },
-            error: function () {
-                $('#error_signin_text').text("Password doesn't match");
+            error: function (response) {
+                console.log(response);
+                if (response['status'] === 403) {
+                    $('#error_signin_text').text("Need to activate user first").prop('style', "color:red");
+                } else {
+                    $('#error_signin_text').text("Password doesn't match").prop('style', "color:red");
+                }
             }
         });
     });
@@ -30,11 +35,11 @@ $(document).ready(function () {
             cache: false,
             success: function(response){
                 console.log(response);
-                $('#error_signup_text').text(response['success']);
+                $('#error_signup_text').text(response['success']).prop('style', "color:green");
             }, // finish error check
             error: function (response) {
                 console.log(response);
-                $('#error_signup_text').text(response.responseJSON['errorMes']);
+                $('#error_signup_text').text(response.responseJSON['errorMes']).prop('style', "color:red");
             }
         });
     });

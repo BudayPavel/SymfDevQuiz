@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(fields="email", message="Email already taken")
  */
-class User implements UserInterface
+class User implements AdvancedUserInterface
 {
     /**
      * @ORM\Id
@@ -162,5 +163,28 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    public function isCredentialsNonExpired()
+    {
+        return true;
+        // TODO: Implement isCredentialsNonExpired() method.
+    }
+
+    public function isAccountNonExpired()
+    {
+        return true;
+        // TODO: Implement isAccountNonExpired() method.
+    }
+
+    public function isAccountNonLocked()
+    {
+        return true;
+        // TODO: Implement isAccountNonLocked() method.
+    }
+
+    public function isEnabled()
+    {
+        return $this->isActive();
     }
 }
