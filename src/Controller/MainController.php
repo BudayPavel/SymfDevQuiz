@@ -49,5 +49,14 @@ class MainController extends Controller
         return new RedirectResponse($uri);
     }
 
+    /**
+     * @Route("/test")
+     */
+    public function test()
+    {
+        $repository = $this->getDoctrine()->getRepository(Result::class);
+        $arr = $repository->findQuizTop($this->getDoctrine()->getRepository(Quiz::class)->findOneBy(['id'=>16]));
 
+        return $this->json($arr,200);
+    }
 }
