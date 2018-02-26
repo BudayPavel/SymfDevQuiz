@@ -16,23 +16,21 @@
                     '<div class="table-responsive">' +
                     '<div class="dataTables_wrapper container-fluid dt-bootstrap4">' +
                     '<div class="row">' +
-                    '      <div class="col-sm-12 col-md-1"><label>Rows</label></div>' +
-                    '               ' +
                     '      <div class="col-sm-12 col-md-2">' +
                     '           <div class="dataTables_length">' +
-                    '               <select id="rows_per_page" class="form-control form-control-sm">' +
+                    '               <label style="color:#fff; font-weight: normal; margin-top: 2.4px; max-width: 200; width: 200px; margin-left: -2px;">Show  <select id="rows_per_page" class="form-control form-control-sm" style="display: inline-block; width: 65px; margin: 0 5px;">' +
                     '                   <option selected="selected">10</option>' +
                     '                   <option>25</option>' +
                     '                   <option>50</option>' +
-                    '               </select>' +
+                    '               </select>  entries</label>' +
                     '           </div>' +
                     '       </div>' +
-                    '       <div class="col-sm-12 col-md-1"><label>Search:</label></div>' +
+                    '       <div class="col-sm-12 col-md-1"><label style="color:#fff; margin-left:170px; margin-top:8; font-weight: normal;">Search:</label></div>' +
                     '       <div class="col-sm-12 col-md-7">' +
-                    '           <input id="search" class="searchBlock__input text-box ingle-line" name="search" type="text">' +
+                    '           <input id="search" class="searchBlock__input text-box ingle-line" style="margin-left: 157px; width: 80%;" name="search" type="text">' +
                     '       </div>' +
                     '       <div class="col-sm-12 col-md-1">' +
-                    '          <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px; width: 60px;">Add</button>' +
+                    '          <button type="button" id="addbtn" class="btn" style="color: #fff; background-color: #17a2b8; border-color: #17a2b8; padding: 7.3px 30px 7.3px 30px; margin-top: 1px; margin-left: 40px;">Add</button>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>' +

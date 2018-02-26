@@ -271,11 +271,6 @@ ul {
 
 
 
-
-
-
-
-
 .bodyLayout{
     display: flex;
     position: relative; 
@@ -308,10 +303,26 @@ ul {
 .infoBlock--center {
     padding: 2.5rem 6.25rem;
 }
+.infoBlock--right {
+    padding: 1.1875rem 1.1875rem 2.4375rem 2.4375rem;
+}
+.infoBlockOne {
+    display: -ms-flexbox;
+    display: flex;
+    flex-flow: column nowrap;
+    flex-grow: 1;
+    position: relative;
+    padding: 8px 0 6px 0;
+    min-height: 1px;
+}
 .gameActions{
     display: flex;
     flex-flow: row nowrap;
     margin-top: 1.875rem;  
+}
+.gameActionsOne{
+    display: flex;
+    flex-flow: row nowrap;
 }
 .gameDetails__TextCol{
     padding-bottom: 1.25rem;
@@ -328,13 +339,16 @@ pa
     color: #fff;
     border-color: #90a7d6;
     text-decoration: none;
-    padding: 15px 90px;
+    padding: 12px 100px;
+    margin-left: 360px; 
+
 }
 .batton-primary:hover {
     text-decoration: none;
     background-color: #00a23d;
     color: #fff;
-    padding: 15px 90px;
+    padding: 12px 100px;
+    margin-left: 360px; 
 }
 
 .batton-default {
@@ -457,4 +471,8 @@ pa
     margin-left: 615px; 
     margin-top: -34px; 
     color: #fff;
+}
+.msrgOne_h3{
+    color: #fff;
+    margin-top: 3px;
 }

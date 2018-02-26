@@ -6,10 +6,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <!--For Time-->
-    <link rel="stylesheet" href="css/flipclock.css">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="js/flipclock.js"></script>
 </head>
 <body style="background-color:#626992;">
 <header>
@@ -36,7 +32,6 @@
     <h3 style="color: #fff;">Головой по голове</h3>
     <div class="bodyLayout">
         <div class="bodyLayout__CenterCol">
-            <h3 class="msrg_h3">1/10</h3>
             <div class="infoBlock infoBlock--center">
                 <div class="gameDetails__TextCol">
                     <h3 style="color: #fff;">Что ты такое?</h3>
@@ -74,23 +69,33 @@
                     </div>
                 </div>
             </div>
+            <div class="infoBlockOne">
+                <div class="gameActionsOne">
+                    <div class="gameActions__StartGameCol">
+                        <h3 class="msrgOne_h3">1/10</h3>
+                    </div>
+                    <div class="gameActions__StopGameCol">
+                        <a class="batton batton-primary" style="font-size:16px;">Next</a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="bodyLayout__RightCol">
             <div class="infoBlock infoBlock--right infoBlock--rules">
                 <div class="gameRules">
-                    <div class="gameRules__Header">Как играть:</div>
+                    <div class="gameRules__Header">How to play:</div>
                     <ol>
-                        <li class="gameRules__ListItem">Как только игра будет запущена, Вам будет показан вопрос и несколько вариантов ответа.
+                        <li class="gameRules__ListItem">Once the game is launched, you will be shown a question and several answers.
                             <ul>
-                                <li class="lis_style_type_circle">Может быть только один правильный ответ</li>
+                                <li class="lis_style_type_circle">There can be only one correct answer</li>
                             </ul>
                         </li>
-                        <li class="gameRules__ListItem">Выход из непроденной игры будет автоматические сохранён
+                        <li class="gameRules__ListItem">Exit from not of the passed game will be automatically saved
                             <ul>
-                                <li class="lis_style_type_circle">Прожолжить игру можно будет перейдя по вкладке "Викторины"</li>
+                                <li class="lis_style_type_circle">You can continue the game by clicking on the "My Quizs"</li>
                             </ul>
                         </li>
-                        <li class="gameRules__ListItem">В конце игры Вам будет показан Лидерборд.</li>
+                        <li class="gameRules__ListItem">At the end of the game you will be shown the result Leaderboard.</li>
                     </ol>
                 </div>
             </div>
