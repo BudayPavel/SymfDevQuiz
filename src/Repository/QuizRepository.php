@@ -7,7 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
-
 class QuizRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)

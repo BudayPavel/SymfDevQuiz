@@ -45,8 +45,8 @@ class ResultRepository extends ServiceEntityRepository
                     JOIN question que ON que.id=qq2.question_id
                     GROUP BY qz.id) AS Ali3 ON Ali3.qid=r.quiz_id
                 WHERE (a.correct = TRUE) AND (r.quiz_id = :qid) AND (Answers=Total)
-                GROUP BY u.first_name, u.last_name, r.time, Answers, Total
-                ORDER BY Points DESC, Time DESC
+                GROUP BY Firstname, Surname, Answers, Total
+                ORDER BY Points DESC, Time ASC
                 LIMIT 10';
         $stmt = $conn->prepare($sql);
         $stmt->execute(['qid' => $quiz->getId()]);

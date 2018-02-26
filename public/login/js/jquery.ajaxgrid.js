@@ -11,33 +11,32 @@
         },options);
 
         let _tools = () => {
-            if (options.mode === 0) {
                 this.append($(
                     '<div class="table-responsive">' +
                     '<div class="dataTables_wrapper container-fluid dt-bootstrap4">' +
                     '<div class="row">' +
-                    '      <div class="col-sm-12 col-md-1"><label>Rows</label></div>' +
-                    '               ' +
-                    '      <div class="col-sm-12 col-md-2">' +
-                    '           <div class="dataTables_length">' +
-                    '               <select id="rows_per_page" class="form-control form-control-sm">' +
-                    '                   <option selected="selected">10</option>' +
-                    '                   <option>25</option>' +
-                    '                   <option>50</option>' +
-                    '               </select>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div class="col-sm-12 col-md-1"><label>Search:</label></div>' +
-                    '       <div class="col-sm-12 col-md-7">' +
-                    '           <input id="search" class="searchBlock__input text-box ingle-line" name="search" type="text">' +
-                    '       </div>' +
-                    '       <div class="col-sm-12 col-md-1">' +
-                    '          <button type="button" id="addbtn" class="btn btn-info" style="margin-top: 0px; width: 60px;">Add</button>' +
-                    '       </div>' +
-                    '   </div>' +
+                    ' <div class="col-sm-12 col-md-2">' +
+                    ' <div class="dataTables_length">' +
+                    ' <label style="color:#fff; font-weight: normal; margin-top: 2.4px; max-width: 200; width: 200px; margin-left: -2px;">Show <select id="rows_per_page" class="form-control form-control-sm" style="display: inline-block; width: 65px; margin: 0 5px;">' +
+                    ' <option selected="selected">10</option>' +
+                    ' <option>25</option>' +
+                    ' <option>50</option>' +
+                    ' </select> entries</label>' +
+                    ' </div>' +
+                    ' </div>' +
+                    ' <div class="col-sm-12 col-md-1"><label style="color:#fff; margin-left:170px; margin-top:8; font-weight: normal;">Search:</label></div>' +
+                    ' <div class="col-sm-12 col-md-7">' +
+                    ' <input id="search" class="searchBlock__input text-box ingle-line" style="margin-left: 157px; width: 80%;" name="search" type="text">' +
+                    ' </div>' +
+                    ' <div class="col-sm-12 col-md-1">' +
+                    ' <button type="button" id="addbtn" class="btn" style="color: #fff; background-color: #17a2b8; border-color: #17a2b8; padding: 7.3px 30px 7.3px 30px; margin-top: 1px; margin-left: 40px;">Add</button>' +
+                    ' </div>' +
+                    ' </div>' +
                     '</div>' +
                     '</div>' +
                     '<br>'
+
+
                 ));
 
             if (options.mode != 0) {
@@ -63,22 +62,6 @@
                 }
                 this.find('#userForm').modal();
             });
-            } else {
-                this.append($('<div>' +
-                    '            <table class="searchBlock__table">' +
-                    '                <tbody>' +
-                    '                <tr>' +
-                    '                    <td>' +
-                    '                        <input class="searchBlock__input text-box single-line" id="search" name="search" type="text">' +
-                    '                    </td>' +
-                    '                    <td class="search" style="vertical-align:middle; width:1px;padding-left:9px;">' +
-                    '                        <div class="searchBlock__searchButton searchButton"></div>' +
-                    '                    </td>' +
-                    '                </tr>' +
-                    '                </tbody>' +
-                    '            </table>' +
-                    '        </div><br>'));
-            }
 
             this.find('#search').keyup(() => {
                 _body(1);
@@ -114,12 +97,12 @@
                 '</tbody>' +
                 '</table>' +
                 '<h6>New answer:</h6>' +
-                '<div class="input-group mb-3">' +
-                '<input type="text" name="question[ans]" id="question_ans" class="form-control" placeholder="Answer text" aria-label="Answer text" aria-describedby="basic-addon2">' +
-                '<div class="input-group-append">' +
-                '<button class="btn btn-outline-info" type="button" id="ansAdd">Add</button>' +
-                '</div>' +
-                '</div>' +
+                '<div class="input-group">'+
+			    '<input type="text" name="question[ans]" id="question_ans" class="form-control" placeholder="Answer text">'+
+			    '<span class="input-group-btn">'+
+			    '<button class="btn btn-default" type="button" id="ansAdd">Add</button>'+
+			    '</span>'+
+			    '</div><br>'+	
                 '<div align="right">' +
                 '<button type="button" class="btn btn-secondary exit" data-dismiss="modal">Close</button>' +
                 '<button type="submit" class="btn btn-primary save">Done</button>' +
@@ -148,7 +131,7 @@
                 _body(1);
                 } else {
                     $('.modal-body').empty();
-                    $('.modal-body').append(backhtml);
+                    $('.modal-body').html(backhtml);
                     backhtml = null;
                     $('#newQuestion').click(function (e) {
                         e.preventDefault();
@@ -254,7 +237,7 @@
                 success: function(response){
                     $('#variants').empty();
                     for (let q of response) {
-                        $('#variants').append('<span class="dropdown-item" value="'+q['id']+'">'+q['text']+'</span>');
+                        $('#variants').append('<li class="dropdown-item" value="'+q['id']+'">'+q['text']+'</li>');
                     }
 
                     $('.dropdown-item').click(function () {
@@ -294,10 +277,10 @@
                 '</tbody>' +
                 '</table>' +
                 '<h6>New question:</h6>' +
-                '<div class="input-group">' +
+                '<div class="">' +
                 '<input id="inputSearch" type = "text" class="form-control" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                '<div class="dropdown-menu" id="variants">' +
-                '</div>' +
+                '<div class="dropdown-menu" id="variants" style="top:auto; left:auto">' +
+                '</div><br>' +
                 '</div>' +
                 '<div align="right">' +
                 '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
@@ -463,7 +446,6 @@
 
                 },
                 error: function () {
-                    alert('Table header error');
                 }
             });
         };
@@ -498,7 +480,6 @@
                 cache: false,
                 obj: this,
                 success: function (response) {
-                    console.log(response);
                      this.obj.find('#table-data').remove();
                      this.obj.find('#pages').remove();
                      if (options.mode != 4)
@@ -570,10 +551,10 @@
                                         data: param,
                                         dataType: "json",
                                         cache: false,
-                                        success: function (response) {
+                                        success: function () {
                                             _body(page);
                                         },
-                                        error: function (response) {
+                                        error: function () {
                                             alert('Delete error');
                                         }
                                     });
@@ -634,7 +615,6 @@
                                         $('#userForm').modal();
                                     },
                                     error: function (response) {
-                                        alert('Delete error');
                                     }
                                 });
                                 break;
@@ -680,7 +660,6 @@
                                         $('#userForm').modal();
                                     },
                                     error: function (response) {
-                                        alert('Delete error');
                                     }
                                 });
                                 break;
@@ -689,7 +668,6 @@
 
                 },
                 error: function (response) {
-                    alert('error');
                 }
             });
         };

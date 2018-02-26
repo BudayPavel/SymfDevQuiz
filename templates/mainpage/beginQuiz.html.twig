@@ -19,7 +19,7 @@
         <input type="text" value="{{ quiz.id }}" id="qid" hidden>
     <br>
     <div class="bodyLayout">
-    <div class="bodyLayout__CenterCol" id="btncontainer">
+    <div class="bodyLayout__CenterCol">
     <div class="infoBlock infoBlock--center" id="gamefield">
     <div class="gameDetails__TextCol">
     <h3 id="tmpqname" style="color: #fff;">{{ quiz.name }}</h3>
@@ -27,31 +27,34 @@
     </div>
     <div class="gameActions">
     <div class="gameActions__StartGameCol">
-        <button class="btn btn-success" id="start">Start</button>
-    {#<a class="font-size batton batton-primary" style="font-size:16px;" id="getquestion" value="{{ quiz.id }}">Start</a>#}
+    <a class="font-size batton batton-primary" style="font-size:16px;" id="start" value="{{ quiz.id }}">Start</a>
     </div>
     <div class="gameActions__StopGameCol">
-    <a class="batton batton-default" style="border-color: #adadad;font-size:16px;" id="back">Back</a>
+    <a class="batton batton-default" style="border-color: #adadad;font-size:16px;" id="back" href="{{ path('main') }}">Back</a>
     </div>
     </div>
     </div>
+
+        <div class="infoBlockOne" id="btncontainer">
+        </div>
+
     </div>
     <div class="bodyLayout__RightCol">
     <div class="infoBlock infoBlock--right infoBlock--rules">
     <div class="gameRules">
-    <div class="gameRules__Header">Как играть:</div>
+    <div class="gameRules__Header">How to play:</div>
     <ol>
-    <li class="gameRules__ListItem">Как только игра будет запущена, Вам будет показан вопрос и несколько вариантов ответа.
+    <li class="gameRules__ListItem">Once the game is launched, you will be shown a question and several answers.
     <ul>
-    <li class="lis_style_type_circle">Может быть только один правильный ответ</li>
+    <li class="lis_style_type_circle">There can be only one correct answer</li>
     </ul>
     </li>
-    <li class="gameRules__ListItem">Выход из непроденной игры будет автоматические сохранён
-    <ul>
-    <li class="lis_style_type_circle">Прожолжить игру можно будет перейдя по вкладке "Викторины"</li>
+    <li class="gameRules__ListItem">Exit from not of the passed game will be automatically saved
+        <ul>
+    <li class="lis_style_type_circle">You can continue the game by clicking on the "My Quizs"</li>
     </ul>
     </li>
-    <li class="gameRules__ListItem">В конце игры Вам будет показан Лидерборд.</li>
+    <li class="gameRules__ListItem">At the end of the game you will be shown the result Leaderboard.</li>
     </ol>
     </div>
     </div>
@@ -64,6 +67,8 @@
 
 {% block scripts %}
 {#<script>#}
+
+let PreviousDownTimeX = 0;
 
 function getTable() {
     $('#gamefield').empty();
@@ -84,11 +89,11 @@ function getTable() {
             dataType: "json",
             cache: false,
             success: function (response) {
-                console.log(response);
                 if (response['cur'] === 0) {
                     getTable();
                     return;
                 }
+                PreviousDownTimeX = new Date ().getTime ();
                 $('#qname').text($('#tmpqname').text());
                 $('#gamefield').empty().append('' +
                     '<div class="gameDetails__TextCol">' +
@@ -106,8 +111,19 @@ function getTable() {
                         '   </div>' +
                         '</div>');
                 }
-    $('#btncontainer').append('<div class="container" id="temp"><div class="col-sm-10 col-md-8"><h4 id="pos" style="color:#fff; display: inline-block">'+response['cur']+'</h4>&nbsp;&nbsp;<h4 style="color:#fff; display: inline-block"> of&nbsp;&nbsp;'+response['total']+'</h4></div>' +
-    '<div class="col-sm-10 col-md-4"><button type="submit" class="btn btn-success btn-block" id="next">Next</button></div></div>');
+    $('#btncontainer').append(
+    '<div class="gameActionsOne">' +
+    '<div class="gameActions__StartGameCol">' +
+    '<h3 id="pos" class="msrgOne_h3" style="color:#fff;">'+response['cur']+'</h3>&nbsp;<h3 style="color:#fff;"> of&nbsp;&nbsp;'+response['total']+'</h3>' +
+        {#<h3 class="msrgOne_h3">1/10</h3>#}
+    '</div>' +
+    '<div class="gameActions__StopGameCol">'+
+        '<a class="batton batton-primary" style="font-size:16px;" id="next">Next</a>' +
+    '</div>' +
+    '</div>');
+
+    {#<div class="container" id="temp"><div class="col-sm-10 col-md-8"><h4 id="pos" style="color:#fff; display: inline-block">'+response['cur']+'</h4>&nbsp;&nbsp;<h4 style="color:#fff; display: inline-block"> of&nbsp;&nbsp;'+response['total']+'</h4></div>' +#}
+    {#'<div class="col-sm-10 col-md-4"><button type="submit" class="btn btn-success btn-block" id="next">Next</button></div></div>');#}
 
                 $('#next').click(function () {
                     let send = {};
@@ -115,7 +131,12 @@ function getTable() {
                     send['qud'] = $('#qud').val();
                     send['aid'] = $('.aid:checked').val();
                     send['cur'] = $('#pos').text();
-                    console.log(send);
+                    if (!PreviousDownTimeX) PreviousDownTimeX = new Date ().getTime (); else
+                    {
+                        let CurrentDownTimeX = new Date ().getTime ();
+                        send['time'] = (CurrentDownTimeX - PreviousDownTimeX)/1000;
+                        PreviousDownTimeX = CurrentDownTimeX;
+                    }
                     $.ajax({
                         url: "http://quiz.dev/play/" + $('#qid').val(),
                         type: "POST",
@@ -123,7 +144,6 @@ function getTable() {
                         dataType: "json",
                         cache: false,
                         success: function (response) {
-                            console.log(response);
                             switch (response['cur']) {
                                 case -1: alert('Choose answer!');
                                     break;

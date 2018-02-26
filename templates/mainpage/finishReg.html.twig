@@ -1,40 +1,26 @@
-<html>
-<head>
-    <title>Quiz</title>
-    <meta charset="utf-8">
+{% extends 'main.html.twig' %}
+
+{% block menuactive %}
+    <li id="home">
+        <a href="{{ path('main') }}">Main</a>
+    </li>
+{% endblock %}
+
+{% block css %}
     <link rel="stylesheet" type="text/css" href="/finish_reg/css/style.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-</head>
-<body>
-<header>
-    <div class="fixed-top">
-        <div id="menu-container" class="centered">
-            <ul>
-                <li id="home_active" class="">
-                    <a href="#">Главная</a>
-                </li>
-                <li id="lectures" class="active">
-                    <a href="#">Викторины</a>
-                </li>
-            </ul>
-            <div class="right">
-                <ul>
-                    <li>
-                        <a href="#">Выйти</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</header>
+{% endblock %}
 
-<div class="mainContentLayout">
-
+{% block pagecontent %}
+    <div class="mainContentLayout">
     <div class="message">
-        <h2>{{ mes_one }}</h2>
-        <h5>{{ mes_two }}</h5>
+    <h2>{{ mes_one }}</h2>
+    <h5>{{ mes_two }}</h5>
     </div>
-</body>
-</html>
+    </div>
+{% endblock %}
+
+
+{% block exit %}
+{% endblock %}
+{% block scripts %}
+{% endblock %}

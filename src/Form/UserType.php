@@ -15,7 +15,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type as TP;
 
-
 class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
