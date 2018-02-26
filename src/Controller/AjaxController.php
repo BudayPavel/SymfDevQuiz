@@ -101,11 +101,11 @@ class AjaxController extends Controller
         $user = $em->getRepository(User::class)->findOneBy(['id' => $params['id']]);
 
         if (!$user && $action != 'add') {
-            return new Response($this->renderView(
-                'mainpage/finishReg.html.twig',
-                array('mes_one' => "Error!",
-                    'mes_two' => "This page doesn't exist")
-            ));
+//            return new Response($this->renderView(
+//                'mainpage/finishReg.html.twig',
+//                array('mes_one' => "Error!",
+//                    'mes_two' => "This page doesn't exist")
+//            ));
         }
 
         switch ($action) {

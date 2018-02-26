@@ -23,6 +23,16 @@ ul a:hover{
 	color: #fff;
 	text-decoration: underline;
 }
+
+#menu-container .rightone a{
+    position: absolute;
+    margin-top: -120px;
+    margin-left: 770px;
+    float: right;
+    font-size: 16px;
+    color: #fff;
+}
+
 div{
 	margin: 0;
     padding: 0;
@@ -69,6 +79,10 @@ ul {
     padding: 15px;
     color: #fff;
     background-position-x: center;
+}
+.gameActionsOne{
+    display: flex;
+    flex-flow: row nowrap;
 }
 #menu-container ul #lectures a {
     background-image: url(../img/my-quiz-not-selected.png);
@@ -329,6 +343,14 @@ pa
     border-color: #90a7d6;
     text-decoration: none;
     padding: 15px 90px;
+}
+.batton-primaryOne {
+    background-color: #00bd62;
+    color: #fff;
+    border-color: #90a7d6;
+    text-decoration: none;
+    padding: 15px 90px;
+    margin-left: 360px;
 }
 .batton-primary:hover {
     text-decoration: none;

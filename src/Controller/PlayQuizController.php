@@ -5,7 +5,7 @@
  * Date: 24.02.2018
  * Time: 18:03
  */
-
+declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Result;
@@ -13,6 +13,7 @@ use App\Entity\Quiz;
 use App\Entity\Question;
 use App\Entity\User;
 use App\Entity\Answer;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

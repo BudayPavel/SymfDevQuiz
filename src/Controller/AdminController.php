@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Павел
- * Date: 13.02.2018
- * Time: 10:56
- */
 declare(strict_types=1);
 namespace App\Controller;
 

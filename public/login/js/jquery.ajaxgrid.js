@@ -266,7 +266,7 @@
                 '<input name="id" id="quiz_id" type="text" hidden/>' +
                 '<h6>Name:</h6><input type="text" name="quiz[name]" id="quiz_name" class="form-control"/>' +
                 '<div id="quiz_a"><input type="checkbox" name="quiz[active]" id="quiz_active">Active</div>' +
-                '<div class="row"><div class="col-md-10">Questions:</h6></div><div class="col-md-2"><button class="btn btn-outline-info" id="newQuestion">New</button></div></div>' +
+                '<div class="row"><div class="col-md-10">Questions:</h6></div><div class="col-md-2"><button class="btn ButtonStyle" id="newQuestion">New</button></div></div>' +
                 '<table  class="table table-bordered table-striped table-sm" name="quiz[questions]" id="quiz_questions">' +
                 '<thead class="thead-dark">' +
                 '<th>Id</th>' +
@@ -276,6 +276,22 @@
                 '<tbody id="quesBody">' +
                 '</tbody>' +
                 '</table>' +
+                '<style>'+
+                '.ButtonStyle{'+
+                'color: #fff; '+
+                'background-color: #17a2b8; '+
+                'border-color: #17a2b8; '+
+                'padding: 7px 20px 7px 20px; '+
+                'margin-top: 1px;'+
+                '}'+
+                '.ButtonStyle:hover{'+
+                'color: #fff; '+
+                'background-color: #1f8898; '+
+                'border-color: #3c93a0; '+
+                'padding: 7px 20px 7px 20px; '+
+                'margin-top: 1px;'+
+                '}'+
+                '</style>'+
                 '<h6>New question:</h6>' +
                 '<div class="">' +
                 '<input id="inputSearch" type = "text" class="form-control" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +

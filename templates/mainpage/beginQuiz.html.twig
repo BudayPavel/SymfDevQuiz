@@ -50,9 +50,6 @@
     </ul>
     </li>
     <li class="gameRules__ListItem">Exit from not of the passed game will be automatically saved
-        <ul>
-    <li class="lis_style_type_circle">You can continue the game by clicking on the "My Quizs"</li>
-    </ul>
     </li>
     <li class="gameRules__ListItem">At the end of the game you will be shown the result Leaderboard.</li>
     </ol>
@@ -72,6 +69,7 @@ let PreviousDownTimeX = 0;
 
 function getTable() {
     $('#gamefield').empty();
+    $('#btncontainer').empty();
     $('#temp').remove();
     $('#gamefield').ajaxgrid({
     'url':'http://quiz.dev/play/' + $('#qid').val()+'/top',
@@ -113,18 +111,17 @@ function getTable() {
                 }
     $('#btncontainer').append(
     '<div class="gameActionsOne">' +
+
     '<div class="gameActions__StartGameCol">' +
-    '<h3 id="pos" class="msrgOne_h3" style="color:#fff;">'+response['cur']+'</h3>&nbsp;<h3 style="color:#fff;"> of&nbsp;&nbsp;'+response['total']+'</h3>' +
+    '<h3 id="pos" class="" style="color:#fff; margin-top: 3px">'+response['cur']+'</h3>&nbsp;'+
+        '<h3 style="color:#fff; margin-top: 3px"> of&nbsp;'+response['total']+'</h3>' +
         {#<h3 class="msrgOne_h3">1/10</h3>#}
     '</div>' +
     '<div class="gameActions__StopGameCol">'+
-        '<a class="batton batton-primary" style="font-size:16px;" id="next">Next</a>' +
-    '</div>' +
+        '<a class="batton batton-primaryOne" style="font-size:16px;" id="next">Next</a>' +
+        '</div>' +
+
     '</div>');
-
-    {#<div class="container" id="temp"><div class="col-sm-10 col-md-8"><h4 id="pos" style="color:#fff; display: inline-block">'+response['cur']+'</h4>&nbsp;&nbsp;<h4 style="color:#fff; display: inline-block"> of&nbsp;&nbsp;'+response['total']+'</h4></div>' +#}
-    {#'<div class="col-sm-10 col-md-4"><button type="submit" class="btn btn-success btn-block" id="next">Next</button></div></div>');#}
-
                 $('#next').click(function () {
                     let send = {};
                     send['rem'] = true;

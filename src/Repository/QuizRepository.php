@@ -109,7 +109,8 @@ class QuizRepository extends ServiceEntityRepository
     public function findNotStarted($params): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT * FROM quiz quz
+        $sql =
+            'SELECT * FROM quiz quz
                 WHERE quz.id NOT IN (SELECT res.quiz_id FROM result res WHERE res.user_id=:uid GROUP BY res.quiz_id)
                 AND (quz.active = TRUE )
                 LIMIT '.$params['records_per_page'].'
