@@ -81,7 +81,11 @@ class AjaxController extends Controller
             );
             return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 
@@ -97,7 +101,11 @@ class AjaxController extends Controller
         $user = $em->getRepository(User::class)->findOneBy(['id' => $params['id']]);
 
         if (!$user && $action != 'add') {
-            throw new NotFoundHttpException('User not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
 
         switch ($action) {
@@ -167,7 +175,11 @@ class AjaxController extends Controller
         $question = $em->getRepository(Question::class)->findOneBy(['id' => $params['id']]);
 
         if (!$question && $action != 'add' && $action != 'get') {
-            throw new NotFoundHttpException('Question not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
 
         switch ($action) {
@@ -265,7 +277,11 @@ class AjaxController extends Controller
         $quiz = $em->getRepository(Quiz::class)->findOneBy(['id' => $params['id']]);
 
         if ($quiz === null && $action!='add') {
-            throw new NotFoundHttpException('Quiz not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
         switch ($action) {
             case 'add':
@@ -338,7 +354,11 @@ class AjaxController extends Controller
             );
             return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 
@@ -370,7 +390,11 @@ class AjaxController extends Controller
             );
             return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 
@@ -402,7 +426,11 @@ class AjaxController extends Controller
         );
         return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 }

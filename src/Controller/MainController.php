@@ -56,7 +56,11 @@ class MainController extends Controller
             $uri = $router->generate('start', array('quiz' => $slug));
             return new RedirectResponse($uri);
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 }

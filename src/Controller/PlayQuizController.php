@@ -35,7 +35,11 @@ class PlayQuizController extends Controller
                     ->findOneBy(['id' => $request->query->get('quiz')])]
             ));
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 

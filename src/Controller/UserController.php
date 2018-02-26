@@ -123,7 +123,11 @@ class UserController extends Controller
             }
             return new Response("", 400);
         } catch(\Exception $e) {
-
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
     }
 
@@ -142,15 +146,15 @@ class UserController extends Controller
                 $em->flush();
                 return new Response($this->renderView(
                     'mainpage/finishReg.html.twig',
-                    array('mes_one' => "Поздравляем",
-                        'mes_two' => "Вы успешно прошли регистрацию. Для прохождения викторины перейдите на главную страницу.")
+                    array('mes_one' => "Congratulation!",
+                        'mes_two' => "You have successefully activate your account!")
                 ));
             }
         } else {
             return new Response($this->renderView(
                 'mainpage/finishReg.html.twig',
-                array('mes_one' => "Ошибка!",
-                    'mes_two' => "Такой ссылки не существет.")
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
             ));
         }
     }
@@ -186,7 +190,11 @@ class UserController extends Controller
     ) {
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $request->query->get('email')]);
         if ($user === null) {
-            throw new NotFoundHttpException('User not found');
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
         $em = $this->getDoctrine()->getManager();
 
@@ -197,8 +205,8 @@ class UserController extends Controller
             $em->flush();
             return new Response($this->renderView(
                 'mainpage/finishReg.html.twig',
-                array('mes_one' => "Поздарвляем!",
-                    'mes_two' => "Вы успешно обнавили пороль")
+                array('mes_one' => "Congratulation!",
+                    'mes_two' => "Password has been changed.")
             ));
         } else {
             return new Response($this->renderView(
