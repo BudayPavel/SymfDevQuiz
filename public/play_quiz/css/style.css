@@ -93,6 +93,14 @@ ul {
  	font-size: 16px;
  	color: #fff;
 }
+#menu-container .rightone a{
+    position: absolute;
+    margin-top: -120px;
+    margin-left: 770px;
+    float: right;
+    font-size: 16px;
+    color: #fff;
+}
 .quiz{
 	color:white;
 	vertical-align:middle;
@@ -310,7 +318,6 @@ ul {
     display: -ms-flexbox;
     display: flex;
     flex-flow: column nowrap;
-    flex-grow: 1;
     position: relative;
     padding: 8px 0 6px 0;
     min-height: 1px;
@@ -326,29 +333,33 @@ ul {
 }
 .gameDetails__TextCol{
     padding-bottom: 1.25rem;
-pa
 }
 .gameActions__StartGameCol{
     display: flex;;
     flex-grow: 4;
     margin-right: 1.875rem;
 }
-
 .batton-primary {
     background-color: #00bd62;
     color: #fff;
     border-color: #90a7d6;
     text-decoration: none;
     padding: 12px 100px;
-    margin-left: 360px; 
 
+}
+.batton-primaryOne {
+    background-color: #00bd62;
+    color: #fff;
+    border-color: #90a7d6;
+    text-decoration: none;
+    padding: 12px 100px;
+    margin-left: 360px;
 }
 .batton-primary:hover {
     text-decoration: none;
     background-color: #00a23d;
     color: #fff;
     padding: 12px 100px;
-    margin-left: 360px; 
 }
 
 .batton-default {
@@ -403,7 +414,7 @@ pa
 }
 .infoBlock--rules {
     padding: 1.1875rem 2.4375rem 2.4375rem 2.4375rem;
-}3
+}
 .gameMain__QuizTime{
     display: flex;
     flex-grow: 1;
