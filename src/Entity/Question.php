@@ -63,7 +63,4 @@ class Question
     {
         return $this->text;
     }
-
-
-
 }

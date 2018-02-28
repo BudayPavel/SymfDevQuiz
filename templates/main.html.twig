@@ -2,12 +2,15 @@
 <head>
     <title>Quiz</title>
     <meta charset="utf-8">
+
     {% block css %}
-        <link rel="stylesheet" type="text/css" href="/mainpage/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/mainpage/css/style.css">
+
     {% endblock %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/login/js/jquery.ajaxgrid.js"></script>
@@ -31,6 +34,7 @@
             </ul>
 
             {% block exit %}
+
             <div class="right">
                 <ul>
                         <li>
@@ -39,15 +43,15 @@
 
                 </ul>
             </div>
-            <div class="rightone">
-                <ul>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <li>
-                            <a href="{{ path('administrator') }}">Admin panel</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+                <div class="rightone">
+                    <ul>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li>
+                                <a href="{{ path('administrator') }}">Admin panel</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             {% endblock %}
         </div>
     </div>

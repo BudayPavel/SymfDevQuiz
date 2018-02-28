@@ -16,6 +16,6 @@ class HomePage extends Controller
     public function home()
     {
         $users = $this->getDoctrine()->getRepository(Result::class)->findTop();
-        return new Response($this->renderView('homepage/home.html.twig',['users'=>$users]));
+        return new Response($this->renderView('homepage/home.html.twig', ['users'=>$users]));
     }
 }

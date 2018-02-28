@@ -11,11 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-
 class AuthHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token) {
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token)
+    {
         if ($request->isXmlHttpRequest()) {
             return $response = new Response("", 200);
         } else {
@@ -23,7 +22,8 @@ class AuthHandler implements AuthenticationSuccessHandlerInterface, Authenticati
         }
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception) {
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
         if ($request->isXmlHttpRequest()) {
             return $response = new Response("", 403);
         } else {

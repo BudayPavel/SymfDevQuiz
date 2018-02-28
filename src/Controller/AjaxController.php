@@ -25,51 +25,54 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AjaxController extends Controller
 {
     /**
      * @Route("/ajax/{slug}")
-     *
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function getJson(Request $request, $slug)
     {
-        $params = array(
-            'start' => 0,
-            'current_page_number' => 1,
-            'records_per_page' => 10,
-            'search' => "",
-            'searchFields' => null,
-            'order' => 'ASC',
-            'orderField' => ""
-        );
+        try {
+            $params = array(
+                'start' => 0,
+                'current_page_number' => 1,
+                'records_per_page' => 10,
+                'search' => "",
+                'searchFields' => null,
+                'order' => 'ASC',
+                'orderField' => ""
+            );
 
-        $params['current_page_number'] = $request->get('current');
-        $params['records_per_page'] = $request->get('rowCount');
-        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
-        $params['search'] = $request->get('searchPhrase');
-        $params['searchFields'] = $request->get('searchableFields');
-        $params['orderField'] = $request->get('orderField');
-        $params['order'] = $request->get('order');
+            $params['current_page_number'] = $request->get('current');
+            $params['records_per_page'] = $request->get('rowCount');
+            $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+            $params['search'] = $request->get('searchPhrase');
+            $params['searchFields'] = $request->get('searchableFields');
+            $params['orderField'] = $request->get('orderField');
+            $params['order'] = $request->get('order');
 
-        switch ($slug) {
-        case 'users':
-            $repository = $this->getDoctrine()->getRepository(User::class);
-            $arr = $repository->findAllFiltered($params);
-            break;
-        case 'quiz':
-            $repository = $this->getDoctrine()->getRepository(Quiz::class);
-            $arr = $repository->findAllFiltered($params);
-            break;
-        case 'question':
-            $repository = $this->getDoctrine()->getRepository(Question::class);
-            $arr = $repository->findAllFiltered($params);
-            break;
-        case 'answer':
-            $repository = $this->getDoctrine()->getRepository(Answer::class);
-            $arr = $repository->findAllFiltered($params);
-            break;
-        }
+            switch ($slug) {
+                case 'users':
+                    $repository = $this->getDoctrine()->getRepository(User::class);
+                    $arr = $repository->findAllFiltered($params);
+                    break;
+                case 'quiz':
+                    $repository = $this->getDoctrine()->getRepository(Quiz::class);
+                    $arr = $repository->findAllFiltered($params);
+                    break;
+                case 'question':
+                    $repository = $this->getDoctrine()->getRepository(Question::class);
+                    $arr = $repository->findAllFiltered($params);
+                    break;
+                case 'answer':
+                    $repository = $this->getDoctrine()->getRepository(Answer::class);
+                    $arr = $repository->findAllFiltered($params);
+                    break;
+            }
             $output = array(
                 'current' => $params['current_page_number'],
                 'rowCount' => $params['records_per_page'],
@@ -77,11 +80,18 @@ class AjaxController extends Controller
                 'rows' => $arr
             );
             return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+        } catch (\Exception $e) {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
+        }
     }
 
     /**
      * @Route("/ajax/users/{action}")
-     *
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function userActions(Request $request, $action, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator)
     {
@@ -91,7 +101,11 @@ class AjaxController extends Controller
         $user = $em->getRepository(User::class)->findOneBy(['id' => $params['id']]);
 
         if (!$user && $action != 'add') {
-            return $this->json(['errorMes' => 'User not found!'], 400);
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
 
         switch ($action) {
@@ -116,8 +130,9 @@ class AjaxController extends Controller
                 $user->setFirstName($request->get('user')['firstName']);
                 $user->setLastName($request->get('user')['lastName']);
                 $user->setRoles($request->get('user')['role']);
-                if (isset($request->get('user')['active']))
-                $user->setActive($request->get('user')['active']);
+                if (isset($request->get('user')['active'])) {
+                    $user->setActive($request->get('user')['active']);
+                }
                 $user->setRoles($request->get('user')['role']);
                 if (!isset($request->get('user')['active'])) {
                     $user->setActive(false);
@@ -150,7 +165,7 @@ class AjaxController extends Controller
 
     /**
      * @Route("/ajax/question/{action}")
-     *
+     * @@Security("has_role('ROLE_ADMIN')")
      */
     public function questionActions(Request $request, $action)
     {
@@ -160,7 +175,11 @@ class AjaxController extends Controller
         $question = $em->getRepository(Question::class)->findOneBy(['id' => $params['id']]);
 
         if (!$question && $action != 'add' && $action != 'get') {
-            return $this->json(['errorMes' => 'Question not found!'], 400);
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
 
         switch ($action) {
@@ -248,7 +267,7 @@ class AjaxController extends Controller
 
     /**
      * @Route("/ajax/quiz/{action}")
-     *
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function quizActions(Request $request, $action)
     {
@@ -256,10 +275,14 @@ class AjaxController extends Controller
         $params['id'] = $request->get('id');
         $em = $this->getDoctrine()->getManager();
         $quiz = $em->getRepository(Quiz::class)->findOneBy(['id' => $params['id']]);
-//        if (!$quiz && $action != 'add') {
-//            return $this->json(['errorMes' => 'Quiz not found!'], 400);
-//        }
 
+        if ($quiz === null && $action!='add') {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
+        }
         switch ($action) {
             case 'add':
                 if (count($request->get('questions')) === 0) {
@@ -305,66 +328,83 @@ class AjaxController extends Controller
 
     /**
      * @Route("/quiz/notfinished")
-     *
+     * @Security("has_role('ROLE_USER')")
      */
     public function notFinished(Request $request)
     {
-        $params = array(
-            'start' => 0,
-            'current_page_number' => 1,
-            'records_per_page' => 5,
-        );
-        $params['current_page_number'] = $request->get('current');
-        $params['records_per_page'] = $request->get('rowCount');
-        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
-        $params['user']=$this->getUser()->getId();
+        try {
+            $params = array(
+                'start' => 0,
+                'current_page_number' => 1,
+                'records_per_page' => 5,
+            );
+            $params['current_page_number'] = $request->get('current');
+            $params['records_per_page'] = $request->get('rowCount');
+            $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+            $params['user'] = $this->getUser()->getId();
 
-        $repository = $this->getDoctrine()->getRepository(Quiz::class);
-        $arr = $repository->findNotFinshed($params);
+            $repository = $this->getDoctrine()->getRepository(Quiz::class);
+            $arr = $repository->findNotFinshed($params);
 
-        $output = array(
-            'current' => $params['current_page_number'],
-            'rowCount' => $params['records_per_page'],
-            'total' => $repository->countNotFinshed($params),
-            'rows' => $arr
-        );
-        return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+            $output = array(
+                'current' => $params['current_page_number'],
+                'rowCount' => $params['records_per_page'],
+                'total' => $repository->countNotFinshed($params),
+                'rows' => $arr
+            );
+            return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+        } catch (\Exception $e) {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
+        }
     }
 
     /**
      * @Route("/quiz/notstarted")
-     *
+     * @Security("has_role('ROLE_USER')")
      */
     public function notStarted(Request $request)
     {
-        $params = array(
-            'start' => 0,
-            'current_page_number' => 1,
-            'records_per_page' => 5,
-        );
-        $params['user'] = $this->getUser()->getId();
-        $params['current_page_number'] = $request->get('current');
-        $params['records_per_page'] = $request->get('rowCount');
-        $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
+        try {
+            $params = array(
+                'start' => 0,
+                'current_page_number' => 1,
+                'records_per_page' => 5,
+            );
+            $params['user'] = $this->getUser()->getId();
+            $params['current_page_number'] = $request->get('current');
+            $params['records_per_page'] = $request->get('rowCount');
+            $params['start'] = ($params['current_page_number'] - 1) * $params['records_per_page'];
 
-        $repository = $this->getDoctrine()->getRepository(Quiz::class);
-        $arr = $repository->findNotStarted($params);
+            $repository = $this->getDoctrine()->getRepository(Quiz::class);
+            $arr = $repository->findNotStarted($params);
 
-        $output = array(
-            'current' => $params['current_page_number'],
-            'rowCount' => $params['records_per_page'],
-            'total' => $repository->countNotStarted($params),
-            'rows' => $arr
-        );
-        return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+            $output = array(
+                'current' => $params['current_page_number'],
+                'rowCount' => $params['records_per_page'],
+                'total' => $repository->countNotStarted($params),
+                'rows' => $arr
+            );
+            return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+        } catch (\Exception $e) {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
+        }
     }
 
     /**
      * @Route("/quiz/finished")
-     *
+     * @Security("has_role('ROLE_USER')")
      */
     public function finished()
     {
+        try {
         $params = array(
             'start' => 0,
             'current_page_number' => 1,
@@ -385,7 +425,12 @@ class AjaxController extends Controller
             'rows' => $arr
         );
         return $this->json($output, Response::HTTP_OK, array('Type' => 'User'));
+        } catch (\Exception $e) {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
+        }
     }
-
-
 }

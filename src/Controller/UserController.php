@@ -13,9 +13,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -23,11 +24,11 @@ class UserController extends Controller
 
     /**
      * @Route("/authorize", name="authorize")
+     *
      */
-    public function show(Request $request) {
-
-        if (!is_null($this->getUser()))
-        {
+    public function show(Request $request)
+    {
+        if (!is_null($this->getUser())) {
             return $this->redirectToRoute('main');
         }
 
@@ -81,14 +82,16 @@ class UserController extends Controller
                     $this->renderView(
                         'emails/registration.html.twig',
                         array('name' => $request->get('user')['firstName'],
-                            'hash' => $user->getPassword())),
-                    'text/html');
+                            'hash' => $user->getPassword())
+                    ),
+                    'text/html'
+                );
             $mailer->send($message);
 
-            return new JsonResponse(['success'=>'Success! Check your email!'],200);
+            return new JsonResponse(['success'=>'Success! Check your email!'], 200);
         }
 
-        return new JsonResponse(['errorMes' => 'Email already used'],400);
+        return new JsonResponse(['errorMes' => 'Email already used'], 400);
     }
 
     /**
@@ -98,56 +101,71 @@ class UserController extends Controller
         Request $request,
         \Swift_Mailer $mailer
     ) {
-        $repository = $this->getDoctrine()->getRepository(User::class);
-        $arr = $repository->findOneBy(['email' => $request->get('pass_restore')['email']]);
-        if ($arr != null) {
-            $message = (new \Swift_Message('Password Recovery'))
-                ->setFrom('2345pawel@gmail.com')
-                ->setTo($request->get('pass_restore')['email'])
-                ->setBody(
-                    $this->renderView(
-                        'emails/recovery_pas.html.twig',
-                        array('email' => $request->get('pass_restore')['email'])),
-                    'text/html');
-            $mailer->send($message);
-            $em = $this->getDoctrine()->getManager();
-            $arr->setActiveRes(false);
-            $em->flush();
-            return new Response("",200);
+        try {
+            $repository = $this->getDoctrine()->getRepository(User::class);
+            $arr = $repository->findOneBy(['email' => $request->get('pass_restore')['email']]);
+            if ($arr != null) {
+                $message = (new \Swift_Message('Password Recovery'))
+                    ->setFrom('2345pawel@gmail.com')
+                    ->setTo($request->get('pass_restore')['email'])
+                    ->setBody(
+                        $this->renderView(
+                            'emails/recovery_pas.html.twig',
+                            array('email' => $request->get('pass_restore')['email'])
+                        ),
+                        'text/html'
+                    );
+                $mailer->send($message);
+                $em = $this->getDoctrine()->getManager();
+                $arr->setActiveRes(false);
+                $em->flush();
+                return new Response("", 200);
+            }
+            return new Response("", 400);
+        } catch(\Exception $e) {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
-        return new Response("", 400);
     }
 
     /**
      * @Route("/finishreg", name="finishreg")
      */
-    public function finishreg(Request $request){
+    public function finishreg(Request $request)
+    {
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['password' => $request->query->get('hash')]);
         $em = $this->getDoctrine()->getManager();
-        if ($user != null){
-            if ($user->isActive()){
+        if ($user != null) {
+            if ($user->isActive()) {
                 return $this->redirectToRoute('hello');
-            }else{
+            } else {
                 $user->setActive(true);
                 $em->flush();
-                return new Response($this->renderView('mainpage/finishReg.html.twig',
-                    array('mes_one' => "Поздравляем",
-                        'mes_two' => "Вы успешно прошли регистрацию. Для прохождения викторины перейдите на главную страницу.")));
+                return new Response($this->renderView(
+                    'mainpage/finishReg.html.twig',
+                    array('mes_one' => "Congratulation!",
+                        'mes_two' => "You have successefully activate your account!")
+                ));
             }
-        }else{
-            return new Response($this->renderView('mainpage/finishReg.html.twig',
-                array('mes_one' => "Ошибка!",
-                    'mes_two' => "Такой ссылки не существет.")));
+        } else {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
         }
-
     }
 
     /**
      * @Route("/recovery", name="recovery")
      */
-    public function form_rec(Request $request) {
+    public function form_rec(Request $request)
+    {
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $request->query->get('email')]);
-        if ($user->isActiveRes()){
+        if ($user->isActiveRes()) {
             return $this->redirectToRoute('hello');
         }
         $form = $this->createForm(PasRecovery::class);
@@ -166,10 +184,18 @@ class UserController extends Controller
     /**
      * @Route("/recovery/password", name="recovery_password")
      */
-    public function recoverypas(Request $request,
-                                UserPasswordEncoderInterface $passwordEncoder){
+    public function recoverypas(
+        Request $request,
+        UserPasswordEncoderInterface $passwordEncoder
+    ) {
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $request->query->get('email')]);
-
+        if ($user === null) {
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Error!",
+                    'mes_two' => "This page doesn't exist")
+            ));
+        }
         $em = $this->getDoctrine()->getManager();
 
         if ($request->get('pas_recovery')['plainPassword']['first'] === $request->get('pas_recovery')['plainPassword']['second']) {
@@ -177,12 +203,16 @@ class UserController extends Controller
             //            return $this->JSON(['l'=>$request->get('user')['plainPassword']['first']], 200);
             $user->setActiveRes(true);
             $em->flush();
-            return new Response($this->renderView('mainpage/finishReg.html.twig',
-                array('mes_one' => "Поздарвляем!",
-                    'mes_two' => "Вы успешно обнавили пороль")));
+            return new Response($this->renderView(
+                'mainpage/finishReg.html.twig',
+                array('mes_one' => "Congratulation!",
+                    'mes_two' => "Password has been changed.")
+            ));
         } else {
-            return new Response($this->renderView('recoverypas.html.twig',
-                array('mes_two' => "Error...")));
+            return new Response($this->renderView(
+                'recoverypas.html.twig',
+                array('mes_two' => "Error...")
+            ));
         }
     }
 }

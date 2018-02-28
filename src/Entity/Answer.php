@@ -77,7 +77,7 @@ class Answer
 //        return $this->question;
 //    }
 
-    public  function setQuestion(Question $question)
+    public function setQuestion(Question $question)
     {
         $this->question = $question;
     }
