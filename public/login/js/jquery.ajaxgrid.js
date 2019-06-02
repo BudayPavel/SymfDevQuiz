@@ -237,7 +237,7 @@
                 success: function(response){
                     $('#variants').empty();
                     for (let q of response) {
-                        $('#variants').append('<li class="dropdown-item" value="'+q['id']+'">'+q['text']+'</li>');
+                        $('#variants').append('<li class="dropdown-item" value="'+q['id']+'">'+q['id']+". "+q['text']+'</li>');
                     }
 
                     $('.dropdown-item').click(function () {
@@ -536,11 +536,12 @@
                         }
 
                         let cell = row.insertCell(-1);
+                        cell.style = 'min-width: 158px';
                         switch (options.mode){
                             case 0:
                                 $(cell).append($(
                                 '<button id="edit" class="btn btn-warning edit" style="width: 60px">Edit</button>' +
-                                '<button id="delete" class="btn btn-danger delete" style="margin-left: 10px; width: 60px">Delete</button>'
+                                '<button id="delete" class="btn btn-danger delete" style="margin-left: 10px; width: 70px">Delete</button>'
                                 )
                                 );
                                 break;

@@ -379,6 +379,7 @@ pa
 .gameActions__StopGameCol{
     display: flex;
     flex-grow: 3;
+    margin-left: -80px;
 }
 .batton {
     display: inline-block;

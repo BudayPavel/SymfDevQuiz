@@ -96,6 +96,7 @@ function getTable() {
                 $('#gamefield').empty().append('' +
                     '<div class="gameDetails__TextCol">' +
                     '   <h3 style="color: #fff;">'+response["question"]+'</h3>' +
+                    '   <img src="/play_quiz/images/'+response['img']+'" alt="">' +
                     '   <input id="qud" type="text" value="'+response['qud']+'" hidden>' +
                     '</div>');
                 for (let ans of response['answers']){
@@ -150,6 +151,7 @@ function getTable() {
                                 $('#gamefield').empty().append('' +
                                         '<div class="gameDetails__TextCol">' +
                                         '   <h3 style="color: #fff;">'+response["question"]+'</h3>' +
+                                        '   <img src="/play_quiz/images/'+response['img']+'" alt="">' +
                                         '   <input id="qud" type="text" value="' + response['qud'] + '" hidden>' +
                                         '</div>');
                                     for (let ans of response['answers']) {

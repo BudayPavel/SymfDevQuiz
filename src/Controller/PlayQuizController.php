@@ -64,6 +64,11 @@ class PlayQuizController extends Controller
                 $out['quiz'] = $quiz->getName();
                 $out['qid'] = $quiz->getId();
                 $out['question'] = $quiz->getQuestions()[$result]->getText();
+                $out['img'] = "";
+                if (preg_match("!%(.*?)%!si", $quiz->getQuestions()[$result]->getText(), $matches)){
+                    $out['question'] = str_replace($matches[0], '', $out['question']);
+                    $out['img'] = $matches[1];
+                }
                 $out['qud'] = $quiz->getQuestions()[$result]->getId();
                 $out['answers'] = [];
                 foreach ($quiz->getQuestions()[$result]->getAnswers() as $ans) {
@@ -91,6 +96,11 @@ class PlayQuizController extends Controller
 
                 if ($quiz->getQuestions()[(integer)$request->get('cur')] != null) {
                     $next['question'] = $quiz->getQuestions()[(integer)$request->get('cur')]->getText();
+                    $next['img'] = "";
+                    if (preg_match("!%(.*?)%!si", $next['question'], $matches)){
+                        $next['question'] = str_replace($matches[0], '', $next['question']);
+                        $next['img'] = $matches[1];
+                    }
                     $next['cur'] = (integer)$request->get('cur') + 1;
                     $next['answers'] = [];
                     foreach ($quiz->getQuestions()[(integer)$request->get('cur')]->getAnswers() as $ans) {

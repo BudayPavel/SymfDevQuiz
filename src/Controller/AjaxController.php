@@ -186,7 +186,7 @@ class AjaxController extends Controller
             case 'get':
                 $search = ['searchFields' => ['text'],
                     'search' => $request->get('search'),
-                    'records_per_page' => 5,
+                    'records_per_page' => 1000,
                     'start' => 0
                 ];
                 return $this->json($em->getRepository(Question::class)->findAllFiltered($search));
