@@ -21,7 +21,7 @@ class Answer
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      */
     private $text;
 
@@ -72,10 +72,10 @@ class Answer
         return $this->correct;
     }
 
-//    public function getQuestion():Question
-//    {
-//        return $this->question;
-//    }
+    public function getQuestion():Question
+    {
+        return $this->question;
+    }
 
     public function setQuestion(Question $question)
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,7 +21,7 @@ class Question
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      */
     private $text;
 
@@ -54,13 +53,15 @@ class Question
         return $this->id;
     }
 
-    public function settext(string $text)
-    {
-        $this->text = $text;
-    }
-
-    public function gettext()
+    public function getText(): ?string
     {
         return $this->text;
+    }
+
+    public function setText(string $text): self
+    {
+        $this->text = $text;
+
+        return $this;
     }
 }

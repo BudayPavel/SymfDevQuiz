@@ -1,0 +1,87 @@
+version: '2'
+services:
+    php:
+        build:
+            context: ./php-fpm
+            args:
+                TIMEZONE: ${TIMEZONE}
+                DOCKER_ENV: ${DOCKER_ENV}
+        volumes:
+            - ${PROJECT_ROOT_DIR}:/var/www/app:cached
+            - ../../logs/app:/var/www/app/var/logs:cached
+            - ../../logs/supervisor:/var/log/supervisor
+        environment:
+            DB_HOST:        ${DB_HOST}
+            DB_NAME:        ${DB_NAME}
+            DB_USERNAME:    ${DB_USERNAME}
+            DB_PASSWORD:    ${DB_PASSWORD}
+            PHP_IDE_CONFIG: "serverName=PhpServerBase"
+        links:
+            - "database:${DB_HOST}"
+        depends_on:
+            - database
+            - elasticsearch
+        networks:
+            - backend
+    nginx:
+        build: ./nginx
+        ports:
+            - "82:80"
+        links:
+            - php
+        volumes_from:
+            - php
+        volumes:
+            - ../../logs/nginx/:/var/log/nginx:cached
+        networks:
+            - backend
+    database:
+        build:
+            context: ./mysql
+        restart: always
+        ports:
+            - "${DB_PORT}:3306"
+        volumes:
+            - "mysql_data:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE:      ${DB_NAME}
+            MYSQL_USER:          ${DB_USERNAME}
+            MYSQL_PASSWORD:      ${DB_PASSWORD}
+        networks:
+            - backend
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+        ports:
+            - 9200:9200
+        environment:
+            - discovery.type=single-node
+            - "ES_JAVA_OPTS=-Xmx512m -Xms512m"
+            - HOSTNAME=elasticsearch
+        # volumes:
+        # - ./data/elasticsearch:/usr/share/elasticsearch/data
+        networks:
+            - backend
+    kibana:
+        image: docker.elastic.co/kibana/kibana:7.9.3
+        ports:
+            - 5601:5601
+        environment:
+            ELASTICSEARCH_URL: http://elasticsearch:9200
+            ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+        depends_on:
+            - elasticsearch
+        networks:
+            - backend
+
+networks:
+    backend:
+        driver: "bridge"
+        ipam:
+            driver: default
+            config:
+                - subnet: ${DOCKER_SUBNET}
+                  gateway: ${DOCKER_GATEWAY}
+volumes:
+    mysql_data:
+        driver: local

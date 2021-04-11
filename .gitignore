@@ -1,7 +1,4 @@
-.env.dist
 .idea/
-bin/
-
 
 ###> symfony/framework-bundle ###
 .env
